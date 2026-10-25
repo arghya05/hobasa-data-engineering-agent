@@ -1,16 +1,20 @@
 {
-  "unsupported": [],
+  "unsupported": [
+    {
+      "text": "TSK-03 to TSK-08 belong to other lanes: Data Science, Backend, Frontend and the Testing Agent. Each of those lanes runs its own secrets step (feat.tasks, section 1).",
+      "why": "feat.tasks section 1 assigns TSK-03 to TSK-08 to the Data Science, Backend, Frontend and Testing Agent lanes, which is correct. It says nothing about secrets steps. No source the agent read says each of those lanes, and in particular the Testing Agent, runs its own secrets step. The only steps file the agent read covers Data Engineering. The citation supports the lane split but not the second sentence."
+    }
+  ],
   "improvements": [
-    "Section 3 splits the result into three environments: Development (`feature/<story>`, local CI), Integration (`dev`) and Production (`main`). The tool view gives one repository-level result ('no secrets required or granted'), not one per environment. ap_pipeline/CLAUDE.md calls `main` 'released', not 'Production'. The agent should say that this per-environment mapping is its own reading of the branch names.",
-    "Evidence item 8 cites 'file:ap_pipeline, Grep over the repository'. That is not a valid file:<repository>/<path> citation. A tool or record citation would be better, along with the list of searched paths, including tests/. I re-ran the search over the whole checkout and confirmed there are no matches.",
-    "The output describes `tests/` only through TSK-01 and TSK-02. One line confirming that the existing tests use no fixtures, network or credentials would make the coding-environment conclusion complete.",
-    "SSQ-1 rightly hands the scheduling-runtime credential question to DE-13. It could also name the reverse trigger: if DE-13 or a deployment step brings in a scheduling workspace or a production feed source, DE-02 must run again, as the step's re-entry trigger requires."
+    "Remove the claim that each other lane runs its own secrets step, or cite a source that says so. Otherwise, mark it as an assumption.",
+    "Say outright that the permission table is restricted. The agent saw only the spine's tool view ('no secrets required or granted' for ap_pipeline), not the table itself. The 'granted: none' result for each environment rests on that one-line summary.",
+    "Section 3 cites the repository-wide grep as 'file:ap_pipeline/src/ap_pipeline', but the text says the whole checkout was searched. Make the scope and the citation match. (I re-ran the search and it returns no matches across the whole ap_pipeline checkout, so the result itself is correct.)"
   ],
   "scores": {
     "correct": 5,
     "complete": 4,
-    "grounded": 5,
+    "grounded": 4,
     "useful": 4
   },
-  "notes": "I checked every factual statement against feat.tasks, the ap_pipeline sources, the brief/tool view and SKILL.md. The sources were CLAUDE.md, ci.py, __init__.py, dq.py, ingest.py, pipeline.py, schedule.json and transform.py. Specific results:\n- transform.py imports only datetime, decimal and typing.\n- dq.py imports nothing.\n- ingest.py uses only csv, io and typing.\n- pipeline.run(csv_text) calls parse_feed, to_model and quality_report.\n- __version__ is \"0.4.0\".\n- COVERAGE_MIN = 90.0, and ci.py reads no environment variable and makes no network call.\n- schedule.json holds daily / 02:00 / Asia/Kolkata.\n- The CI command is `/usr/bin/python3 ci.py`.\n- The branches are main, dev and feature/<story>.\n- TSK-01's 'Must not change' list includes ingest.py, pipeline.py and schedule.json.\n- TSK-02 says 'No I/O'.\n- TSK-06 says a transport layer would re-trigger DES-01.\n- DE-13 'Scheduling the pipelines' exists in SKILL.md.\n- I re-ran the agent's keyword Grep (secret, token, password, api_key, environ, getenv, credential) over ap_pipeline: no matches.\n- The conclusion (none required, none granted, no gap, no access request) matches the tool view.\nI found no hallucinations. The step outcome, a secrets scope with permissions confirmed, is met for the two DE tasks."
+  "notes": "I checked the output against feat.tasks, the brief's tool view, ap_pipeline/CLAUDE.md, ingest.py, pipeline.py, schedule.json and the data-engineering-steps SKILL.md. Almost every statement holds up:\n- Task scope is right: TSK-01 and TSK-02 are the DE / ap_pipeline tasks. TSK-01 changes transform.py and the version step in __init__.py and builds on synthetic v3 rows. TSK-02 is a pure function with 'No I/O'.\n- The code evidence is right: parse_feed uses csv.DictReader over io.StringIO, and run chains parse_feed, to_model and quality_report.\n- I re-ran the grep for env, secret and network keywords across the ap_pipeline checkout. It returns no matches, as the output says.\n- The Python 3.9 standard library and the CI command '/usr/bin/python3 ci.py' match ap_pipeline/CLAUDE.md. The branches main, dev and feature/<story> match the CLAUDE.md file and feat.tasks section 2.\n- The schedule values (daily, 02:00, Asia/Kolkata) match schedule.json. DE-13 (scheduling) and DE-14 (email and Teams notifications) match the SKILL.md.\n- 'None required / none granted / nothing to request' matches the spine's tool result.\nThe only unsupported item is a minor side remark that other lanes run their own secrets steps; it is not backed by its citation. It does not affect the DE result. The output meets the workbook action (it checks secret access and correctly concludes that no request is needed) and the outcome (scope stated by environment, names only). The open questions are marked non-blocking and are sensible."
 }

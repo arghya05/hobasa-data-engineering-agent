@@ -1,57 +1,66 @@
-# DE-02 Access to secrets (Data Engineering agent)
+# DE-02 · Access to secrets
 
-**Item:** FEAT-ZD-48600 · **status:** done
-**Trigger:** Task creation, or any re-entry trigger ¹  
-**Action:** Check the access for required secrets and ask for access as needed  
-**Outcome expected:** Secrets are available with access permissions
+**Agent:** Data Engineering · **Item:** FEAT-ZD-48600 · **Status:** ✅ done
+**Approved by:** Data engineer: approve by sim.data_engineer
 
-## Inputs (what the agent was given)
+**What this step does:** Check the access for required secrets and ask for access as needed
 
-| Item | Prepared input (this repository) | Read from (producer in GitHub) | Commit | Produced by |
+**Expected outcome:** Secrets are available with access permissions
+
+**Started by:** Task creation, or any re-entry trigger ¹
+
+## Input: what the agent received
+
+| # | Input | What it is | Produced by | Open |
 |---|---|---|---|---|
-| feat.tasks | hobasa-data-engineering-agent/inputs/FEAT-ZD-48600/DE-02/feat.tasks.md | final_document/e2e-run/runs/run-20261025-123936-feat-zd-48600/workspace/agents/hobasa-design-agent/outputs/FEAT-ZD-48600/feat.tasks.md | b0fd4d2 | DES-04 |
-| org.permission_table | not applicable or by reference | — | — | — |
+| 1 | `feat.tasks` | Engineering tasks with goal, AC, dependencies and size budget | Design agent · DES-04 | [input copy](https://github.com/arghya05/hobasa-data-engineering-agent/blob/main/inputs/FEAT-ZD-48600/DE-02/feat.tasks.md) · [original](https://github.com/arghya05/hobasa-design-agent/blob/main/outputs/FEAT-ZD-48600/feat.tasks.md) · [HTML](https://htmlpreview.github.io/?https://raw.githubusercontent.com/arghya05/hobasa-design-agent/main/docs/FEAT-ZD-48600/DES-04_feat-tasks.html) · [PDF](https://github.com/arghya05/hobasa-design-agent/blob/main/docs/FEAT-ZD-48600/DES-04_feat-tasks.pdf) |
+| 2 | `org.permission_table` | Allowed tools, secrets and data per agent | — | not applicable for this item, or passed by reference |
 
-Full brief per attempt: `brief_attempt<N>.md` (trigger event, owner answers, tool view, refusal reasons).
+The full brief the agent was given, attempt by attempt: `brief_attempt<N>.md` in this folder.
 
-## Outputs (what the agent produced)
+## Output: what the agent produced
 
-| Item | GitHub file |
-|---|---|
-| task.secrets_scope | hobasa-data-engineering-agent/outputs/FEAT-ZD-48600/task.secrets_scope.md |
+| # | Output | What it is | Open |
+|---|---|---|---|
+| 1 | `task.secrets_scope` | Secrets granted for the task's environments (names only) | [Markdown](https://github.com/arghya05/hobasa-data-engineering-agent/blob/main/outputs/FEAT-ZD-48600/task.secrets_scope.md) · [HTML](https://htmlpreview.github.io/?https://raw.githubusercontent.com/arghya05/hobasa-data-engineering-agent/main/docs/FEAT-ZD-48600/DE-02_task-secrets_scope.html) · [PDF](https://github.com/arghya05/hobasa-data-engineering-agent/blob/main/docs/FEAT-ZD-48600/DE-02_task-secrets_scope.pdf) |
 
-## Code
-
-Repository `ap-pipeline-sample`, branch `feature/story`, commit `3fcbe1b`
+**Code:** repository [ap-pipeline-sample](https://github.com/arghya05/ap-pipeline-sample) · branch [feature/story](https://github.com/arghya05/ap-pipeline-sample/tree/feature/story) · commit [3fcbe1b](https://github.com/arghya05/ap-pipeline-sample/commit/3fcbe1b)
 
 ```
 no file changes in this step
 ```
 
+## Checks and approval
+
+| Attempt | Session | Problems found by the checks | Unsupported statements (judge) | Judge scores |
+|---|---|---|---|---|
+| 1 | new | 1 | 1 | {'correct': 5, 'complete': 4, 'grounded': 4, 'useful': 4} |
+| 2 | continued | 0 | 0 | {'correct': 5, 'complete': 4, 'grounded': 5, 'useful': 4} |
+
+Improvements the independent judge suggests (non-blocking):
+
+- Section 3, the keyword-search bullet: the claim covers the whole ap_pipeline checkout, but the citation lists only ingest.py, pipeline.py and schedule.json. A re-run of the search confirms no matches. Still, the bullet should also cite the other files it searched (transform.py, dq.py, __init__.py, ci.py, tests/test_pipeline.py, data/sample_feed.csv), or name the search as the evidence.
+- Section 2, the note after the table: TSK-08 is a cross-repository harness that calls ap_pipeline's `pipeline.run` and `delays_by_vendor`, and its location is still open (TKQ-3). Calling it 'outside ap_pipeline' is loose. It would be clearer to say it belongs to the Testing Agent lane, not to the Data Engineering lane.
+- The evidence for 'no secrets needed' comes from ingest.py and pipeline.py, which neither task changes. transform.py, the file TSK-01 changes, is not cited. Citing it, and stating that ci.py and the test run need no credential, would make the CI/feature-branch row stronger.
+- The file could say directly that the step outcome ('Secrets are available with access permissions') is met trivially because the required set is empty. That makes the result easy to see at the gate.
+
 ## How the agent worked
 
-- Approach: First I took the Data Engineering tasks from feat.tasks: TSK-01 and TSK-02, both in ap_pipeline. For each one I checked whether it needs any external access. I read every ap_pipeline module, ci.py and schedule.json, and searched the repository for secret, credential and environment-variable patterns; the search found nothing. I then compared what is required with what the tool:repo-access view says is granted (taken from the permission table, which is passed by reference only). Nothing is required and nothing is granted, so there is no gap and I raised no access request. A draft from an earlier run was already at the output path. I read it and replaced it with a complete clean version, which corrects a statement about what dq.py imports and removes a stray line of tool output. The step denies shell commands, so I used only Read, Grep, Glob and Write. No connector was needed.
-- Tools used: Skill:data-engineering-steps, Read, Grep, Glob, Write
-- Helper subagents: none
-- Connector calls: none
-
-## Attempts (checks before any person saw the output)
-
-| Attempt | Session | Checks failed | Judge unsupported | Judge scores |
-|---|---|---|---|---|
-| 1 | new | 0 | 0 | {'correct': 5, 'complete': 4, 'grounded': 5, 'useful': 4} |
-
-## Improvements the independent judge suggests (non-blocking, for the people at the gate)
-
-- Section 3 splits the result into three environments: Development (`feature/<story>`, local CI), Integration (`dev`) and Production (`main`). The tool view gives one repository-level result ('no secrets required or granted'), not one per environment. ap_pipeline/CLAUDE.md calls `main` 'released', not 'Production'. The agent should say that this per-environment mapping is its own reading of the branch names.
-- Evidence item 8 cites 'file:ap_pipeline, Grep over the repository'. That is not a valid file:<repository>/<path> citation. A tool or record citation would be better, along with the list of searched paths, including tests/. I re-ran the search over the whole checkout and confirmed there are no matches.
-- The output describes `tests/` only through TSK-01 and TSK-02. One line confirming that the existing tests use no fixtures, network or credentials would make the coding-environment conclusion complete.
-- SSQ-1 rightly hands the scheduling-runtime credential question to DE-13. It could also name the reverse trigger: if DE-13 or a deployment step brings in a scheduling workspace or a production feed source, DE-02 must run again, as the step's re-entry trigger requires.
-
-Details: `result_attempt<N>.json` (claims with sources), `checks_attempt<N>.json`, `judge_attempt<N>.json`.
+- **Approach:** I followed the DE-02 procedure in the data-engineering-steps skill. I read feat.tasks to find the Data Engineering tasks: TSK-01 and TSK-02, both in ap_pipeline. TSK-01 parses paid_date in transform.py, and TSK-02 adds a pure, no-I/O delays_by_vendor in delays.py. org.permission_table is restricted, so I compared those tasks with it only through the tool view, which says ap_pipeline needs no secrets and is granted none. To confirm the code needs none, I read ingest.py, pipeline.py and schedule.json and searched the checkout case-insensitively for environment-variable, credential and network patterns. Nothing matched. The output lists secret names only: an empty scope for each branch (feature/<story>, dev, main) and no access request. I limited the note on TSK-03 to TSK-08 to what feat.tasks section 1 states, which is the lane each task belongs to. The step was a small lookup, so I did it directly without a helper.
+- **Tools used:** Skill (data-engineering-steps), Read, Grep, Glob, Write
+- **Helper subagents:** none
+- **Connector calls:** none
 
 ## Human evaluation
 
-| Role | By | Decision | Scores | Comment or reason |
+| Role | By | Decision | Scores (correct, complete, grounded, useful) | Comment or reason |
 |---|---|---|---|---|
 | Data engineer | sim.data_engineer | approve | — | automated checks and the independent judge passed |
+
+## Files in this folder (audit trail)
+
+- `brief_attempt<N>.md`: the exact brief the agent received
+- `result_attempt<N>.json`: the agent's structured answer (approach, tools, claims with their sources, open questions)
+- `checks_attempt<N>.json`: what the automated guardrail checks found
+- `judge_attempt<N>.json`, `judge_brief_attempt<N>.md`: the independent judge
+- `outputs/`: the outputs as approved
