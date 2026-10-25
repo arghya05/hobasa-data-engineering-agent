@@ -1,0 +1,17 @@
+{
+  "unsupported": [],
+  "improvements": [
+    "Section 6 leaves out validation cases that the cited sections already define. Missing cases: a paid record with blank `paid_date` is kept with `paid_date = None` (feat.data_model_change 2.2 / B1.4); an unpaid record with a valid `paid_date` is kept (DD-7); a `paid_date` before `due_date` gives a negative delay that is kept (2.2, 2.4); a short row where `paid_date` is `None` gives `None`. Adding these would make the mapping rules fully testable for the coding and unit-test steps.",
+    "Section 6 has no cases for the Delay history mapping (section 4), although feat.data_model_change section 4 has one ('Delay history values are int and keys are vendors with at least one paid record carrying a paid_date'). Add cases for feed order, first-seen vendor order, exclusion of unpaid records and records without `paid_date`, and the record list staying unchanged.",
+    "Section 8 does not carry forward DMQ-A (whether to register the `reason` value `paid_date` and the Delay history org-wide) or DMQ-D (whether to re-export `delays_by_vendor`). Neither is answered by the customer contract. Listing them as still open, or saying they are out of scope for mapping, would make the hand-off cleaner.",
+    "MQ-B is well raised. The interim answer could also name the data-quality risk: if the feed owner sends `paid_date` on unpaid rows despite the contract, nothing in the report surfaces it. A count or warning could be considered.",
+    "Section 4 cites D-2026-031 for `delay_days` in calendar days. That decision is about aging buckets ('calendar days after due date'), so it only indirectly supports a delay-day definition. The direct source is feat.data_model_change 2.4, which is also cited."
+  ],
+  "scores": {
+    "correct": 5,
+    "complete": 4,
+    "grounded": 5,
+    "useful": 4
+  },
+  "notes": "I checked every statement in feat.mappings.md against feat.data_model_change (DE-05 output at 379f011), org.customer_mappings (a6b3e2a), the step brief's tool view of the ap_pipeline code (transform.py, ingest.py, dq.py, schedule.json, tests) and the shared memory. I found no hallucinations.\n\nCustomer contract claims: the v3 columns, `paid_date` being optional, an ISO date and empty when unpaid, the mapping `paid_date -> Invoice.paid_date`, and daily 02:00 Asia/Kolkata all match org.customer_mappings word for word.\n\nCode claims: the schedule values match schedule.json. The existing field transformations (`strip()`, `date.fromisoformat`, `Decimal`, the `paid` default 'false', the exception-name reject reasons) match transform.py. The `reject_reasons` behaviour matches dq.py.\n\nData Model claims: the new `paid_date` rule, the `PAID_DATE_REASON` constant, the DD-6 ordering, the DD-7 interim rule, the negative-delay rule, the Delay history shape, filter, order, persistence and consumer, and the TC-1/TC-2 hand-off all trace to the cited sections of feat.data_model_change. The commit hashes 379f011 and a6b3e2a appear in record:brief.\n\nInferences and open questions: closing DMQ-B because the contract spells the column `paid_date` is a reasonable inference and is put to the owner as MQ-A. The tension between 'empty when unpaid' and DD-7 is correctly raised as MQ-B, not stated as fact. Owner names in section 8 are labelled 'proposed'.\n\nThe output meets the workbook outcome: it updates the data mapping against the data model and applies the latest customer mapping. The gaps are in completeness of the validation cases and in carrying forward the open questions, not in grounding."
+}

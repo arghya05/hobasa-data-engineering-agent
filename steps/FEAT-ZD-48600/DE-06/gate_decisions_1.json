@@ -1,0 +1,11 @@
+[
+  {
+    "role": "Data engineer",
+    "by": "sim.data_engineer",
+    "decision": "approve",
+    "scores": null,
+    "comment": "automated checks and the independent judge passed",
+    "reason": null,
+    "simulated": true
+  }
+]
