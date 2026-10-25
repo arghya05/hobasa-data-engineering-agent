@@ -1,0 +1,17 @@
+{
+  "unsupported": [],
+  "improvements": [
+    "Section 8, 'No production or source-system data used': the text says 'only the step's inputs and the tool view were used', but this attempt also read the ap_pipeline files (transform.py, __init__.py, schedule.json, ingest.py, dq.py, pipeline.py, sample_feed.csv, README.md, CLAUDE.md). Reword it, for example: 'only the step inputs, the tool view and the ap_pipeline repository files were read; no source system was queried'.",
+    "The agent read the ap_pipeline code but cites only feat.design and feat.tasks for code facts. Add file: citations where the code confirms them: file:ap_pipeline/src/ap_pipeline/transform.py (line 14, the exception tuple), file:ap_pipeline/src/ap_pipeline/__init__.py (__version__ \"0.4.0\") and file:ap_pipeline/src/ap_pipeline/schedule.json (02:00). It should also state that a check of the repository found no database, SQL or migration code. That would independently support tool:repo-access.",
+    "Section 5 names DE-05 'Data Model Changes' and DE-08 'Coding' without a citation. Cite the agent README or the data-engineering-steps skill, where these step names are defined.",
+    "Remove the stray line at the end of the file ('[Tool result] [ap_pipeline] No database in this repository's architecture; no migrations required'). It is raw tool output pasted into the deliverable, and section 3 already says the same thing with a citation.",
+    "Section 8 cites only tool:repo-access for 'Required database changes completed'. Also cite feat.design (A1, DD-1) there, so the row shows that the design rules out storage, not only that the repository has none."
+  ],
+  "scores": {
+    "correct": 5,
+    "complete": 4,
+    "grounded": 4,
+    "useful": 4
+  },
+  "notes": "I checked every statement against feat.design, feat.tasks, the brief, the tool view and the shared memory, and found no hallucinations. Each claim below matches its source:\n- The feat.design A1 boundary lists 'Storage, database, schema migration' as out of the design.\n- DD-1 says no new storage, and NF-10 says every new function is pure.\n- A8 says adding storage would reopen DES-01.\n- DC-1 is a plain dict, DC-2 is a Dict[str, List[int]], and B1.3 gives the feed-row shape.\n- The TSK-01 and TSK-02 file budgets and the TSK-01 must-not-change list match feat.tasks.\n- schedule.json is daily at 02:00 Asia/Kolkata, and ap_pipeline is at version 0.4.0.\n- The to_model exception tuple matches.\n- DQ-1 is carried over correctly.\n- The memory IDs match MEMORY.md.\n\nI also checked the code: transform.py line 14, __init__.py (__version__ = \"0.4.0\") and schedule.json (02:00) agree with the output, and a search of ap_pipeline found no database, SQL or migration code. The DE-05 and DE-08 step names are real (agent README and skill) but are not cited in the output.\n\nThe previous refusal was about citing files the agent had not read. This version drops those citations, so that problem is gone, but the code it did read is now left uncited.\n\nThe conclusion that no database change is required, so nothing is outstanding, meets the workbook outcome. The remaining points are about citation completeness and one inaccurate line in the validation table about which sources were used."
+}
