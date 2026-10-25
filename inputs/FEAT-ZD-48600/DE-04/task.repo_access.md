@@ -1,54 +1,66 @@
-<!-- input task.repo_access for DE-04: from hobasa-data-engineering-agent/outputs/FEAT-ZD-48600/task.repo_access.md at commit c7b4be8, produced by DE-01 -->
+<!-- input task.repo_access for DE-04: from hobasa-data-engineering-agent/outputs/FEAT-ZD-48600/task.repo_access.md at commit aac590a, produced by DE-01 -->
 # task.repo_access: FEAT-ZD-48600
 
-Coding prerequisites for the Data Engineering lane of FEAT-ZD-48600 ("Show which overdue invoices belong to vendors that usually pay late"). This is DE-01, Checking the coding prerequisites (attempt 4). The step checks access to Databricks, that the repository is available, and that the agent identity can write to it. There is no gate: automated checks, the independent judge and sampled human evaluation review it.
+DE-01 Checking the coding prerequisites for the Data Engineering lane of FEAT-ZD-48600. The step checks Databricks access, whether the repository is available, whether a repository has to be created, and write access. Gate: automated checks, the independent judge and sampled human evaluation (record:brief).
 
 | Field | Value | Source |
 |---|---|---|
 | Trace ID | FEAT-ZD-48600 | record:brief |
-| Step | DE-01 Checking the coding prerequisites (attempt 4) | record:brief |
+| Step | DE-01 Checking the coding prerequisites | record:brief |
 | Trigger | Task creation (feat.tasks from DES-04) | record:brief; feat.tasks |
-| Inputs | feat.tasks (b0fd4d2), org.engineering_stack (a6b3e2a) | record:brief |
-| Data Engineering tasks in scope | TSK-01 (STORY-01, `paid_date`), TSK-02 (STORY-02, `delays_by_vendor`) | feat.tasks (section 1) |
-| Result | **Ready.** The repository is available with write access. Databricks is not applicable. | tool:repo-access; org.engineering_stack |
+| Inputs | feat.tasks (b0fd4d2), org.engineering_stack (3b03f15) | record:brief |
+| Data Engineering tasks in scope | TSK-01 (STORY-01, `paid_date` in `transform.to_model`) and TSK-02 (STORY-02, new `delays.delays_by_vendor`), both in ap_pipeline | feat.tasks (sections 1, 3) |
 
-## 1. Prerequisite checks
+## 1. Result
 
-| # | Check | Result | Source |
+| Prerequisite | Status | Evidence | Source |
 |---|---|---|---|
-| P-1 | Databricks workspace access | **Not applicable.** No repository uses Databricks or a database. The tool view says no Databricks or other workspace is used by ap_pipeline. | org.engineering_stack; tool:repo-access |
-| P-2 | Repository available | **Pass.** ap_pipeline (Python 3.9, standard library) is available locally. | tool:repo-access; org.engineering_stack |
-| P-3 | Repository creation needed | **No.** The repository exists. TSK-01 and TSK-02 are both on the "Data Engineering / ap_pipeline" lane, so no new repository is needed. | feat.tasks (section 1); tool:repo-access |
-| P-4 | Integration branches | **Pass.** The repositories have branches `main` (released) and `dev` (integration), with feature branches per story. | org.engineering_stack; feat.tasks (section 2) |
-| P-5 | Feature branch created | **Pass.** Branch `feature/story` was created from `dev` at `3fcbe1b`. | tool:repo-access |
-| P-6 | Write access for the agent identity | **Pass.** The agent identity has write access and the git status is clean. | tool:repo-access |
-| P-7 | CI command known | **Pass.** `/usr/bin/python3 ci.py`, which enforces line coverage >= 90% and static checks standing in for SonarQube. The task CI bar adds Python 3.9 syntax only, no `print`, `eval`, `exec` or bare `except`, and lines at most 140 characters. | org.engineering_stack; feat.tasks (section 2) |
-| P-8 | Starting version recorded | **Pass.** ap_pipeline is at `0.4.0` today. TSK-01 owns its version step. | feat.tasks (section 2) |
-| P-9 | Files in the task budgets | **Recorded.** TSK-01 may change `src/ap_pipeline/transform.py`, `src/ap_pipeline/__init__.py` (version step only) and `tests/test_pipeline.py`. TSK-02 adds the new files `src/ap_pipeline/delays.py` and `tests/test_delays.py`. | feat.tasks (TSK-01, TSK-02) |
+| Repository needed | ap_pipeline only. TSK-01 and TSK-02 both name the Data Engineering lane and ap_pipeline | feat.tasks section 1 | feat.tasks |
+| Repository available | **Yes.** ap_pipeline is checked out locally. Code is in `src/ap_pipeline/` (`__init__.py`, `dq.py`, `ingest.py`, `pipeline.py`, `schedule.json`, `transform.py`) and tests are in `tests/` (`test_pipeline.py`). `ci.py` and `data/sample_feed.csv` are at the root | Repository file listing; repository memory | tool:repo-access; file:ap_pipeline/CLAUDE.md |
+| Repository creation | **Not needed.** The repository exists. TSK-02 adds `src/ap_pipeline/delays.py` and `tests/test_delays.py` inside it | Tasks add modules to an existing repository | feat.tasks (TSK-02); tool:repo-access |
+| Branches | `main`, `dev` and `feature/story` exist. HEAD is `feature/story`, created from `dev` at `3fcbe1b`. `main`, `dev` and `feature/story` all point to the same commit | `.git/HEAD`, `.git/refs/heads/*` | tool:repo-access; file:ap_pipeline/.git/HEAD; file:ap_pipeline/.git/refs/heads/feature/story; file:ap_pipeline/.git/refs/heads/dev; file:ap_pipeline/.git/refs/heads/main |
+| Write access | **Yes.** The agent identity has write access and the working tree is clean | Spine tool view | tool:repo-access |
+| Databricks access | **Not applicable.** No repository uses Databricks or a database. The ap_pipeline source has no Databricks, Spark, JDBC or database reference, so there is no workspace to check | org.engineering_stack; tool view; code search with no matches | org.engineering_stack; tool:repo-access |
+| Language and CI | Python 3.9 standard library. CI is `/usr/bin/python3 ci.py` with line coverage of at least 90% plus static checks that stand in for SonarQube | Repository memory and stack | org.engineering_stack; file:ap_pipeline/CLAUDE.md; file:ap_pipeline/ci.py |
+| Current version | ap_pipeline `0.4.0`, kept in `src/ap_pipeline/__init__.py`. TSK-01 owns the version step | `src/ap_pipeline/__init__.py` | file:ap_pipeline/src/ap_pipeline/__init__.py; file:ap_pipeline/CLAUDE.md; feat.tasks (section 2) |
 
-## 2. What this means for the next steps
+**Outcome:** the repository is available and has write access. No repository needs to be created. Databricks is not used, so it is not a prerequisite for TSK-01 or TSK-02. The Data Engineering lane can go on to DE-02 (record:brief; tool:repo-access; org.engineering_stack).
 
-- Secrets: the repository uses no Databricks workspace and no database, so P-1 found no workspace credential to check (org.engineering_stack; tool:repo-access).
-- Database changes: no repository uses a database (org.engineering_stack).
-- Commits: work goes on `feature/story`. Commit messages start with the story ID (`STORY-01`, `STORY-02`), and the task ID may follow (org.engineering_stack; feat.tasks section 2).
-- Scheduling: `schedule.json` is on TSK-01's "Must not change" list, so coding needs no scheduling workspace (feat.tasks TSK-01).
+## 2. Branch and commit conventions for the lane
 
-## 3. Observations (non-blocking)
+| Item | Value | Source |
+|---|---|---|
+| Branches | `main` (released), `dev` (integration), `feature/<story>` | file:ap_pipeline/CLAUDE.md; feat.tasks (section 2) |
+| Working branch | `feature/story`, created from `dev` | tool:repo-access |
+| Commit message | Starts with the story ID (`STORY-01` / `STORY-02`). The task ID may follow it | feat.tasks (section 2); org.engineering_stack; record:memory |
+| Signatures | Keep the existing public signatures and add new functions for new behaviour | file:ap_pipeline/CLAUDE.md |
+| Push and merge | Only the spine pushes and merges. This step ran no git commands that change state | record:brief |
 
-| ID | Observation | Interim handling | Source |
-|---|---|---|---|
-| RA-1 | The feature branch is named `feature/story`. The convention is `feature/<story>` (for example `feature/STORY-01`). The Data Engineering lane has two stories (STORY-01, STORY-02) on one repository. | Use `feature/story` for both tasks. The story-ID commit prefix keeps each commit traceable. | tool:repo-access; feat.tasks (section 2) |
-| RA-2 | Write access is as reported by the tool view. This output does not claim any push or CI run of its own. | None needed for DE-01. | tool:repo-access |
+## 3. Notes for later Data Engineering steps
+
+| ID | Note | Source |
+|---|---|---|
+| N-1 | `src/ap_pipeline/schedule.json` sets a daily run at `02:00` `Asia/Kolkata`. TSK-01 lists `schedule.json` under "Must not change". This matters for DE-13 scheduling | file:ap_pipeline/src/ap_pipeline/schedule.json; feat.tasks (TSK-01) |
+| N-2 | `ci.py` imports the third-party `coverage` package to measure coverage. This step could not run shell commands, so it could not confirm that `coverage` is installed for `/usr/bin/python3`. The first CI run will confirm it | file:ap_pipeline/ci.py |
+| N-3 | TSK-01 does not depend on any code. Feed v3 in production (PQ-6) gates release, not coding. Build on synthetic v3 rows only | feat.tasks (TSK-01) |
 
 ## 4. Validation check
 
-| Check | Result |
-|---|---|
-| Databricks access checked | Not applicable (P-1) |
-| Repository available, no creation needed | Pass (P-2, P-3) |
-| Write access | Pass (P-6) |
-| Production data read | None |
-| Blocking questions | None |
+| Check | Result | Source |
+|---|---|---|
+| Every repository in the Data Engineering tasks is available with write access | Pass (ap_pipeline) | feat.tasks; tool:repo-access |
+| Databricks checked | Not applicable: no repository uses it | org.engineering_stack; tool:repo-access |
+| No production data, secrets or personal data read or written | Pass | record:brief |
+| Blocking questions | None | — |
+
+## 5. Open questions (non-blocking)
+
+| ID | Question | Interim answer | Owner (proposed) |
+|---|---|---|---|
+| RAQ-1 | Is the `coverage` package installed for `/usr/bin/python3`, which `ci.py` needs? It was not checked because DE-01 allows no shell commands | Assume yes. The first CI run (DE-09 / DE-10) confirms it | Data engineer |
+
+
+[Tool result] [ap_pipeline] Branch feature/story at 3fcbe1b; write access confirmed
 
 
 [Tool result] [ap_pipeline] Branch feature/story at 3fcbe1b; write access confirmed

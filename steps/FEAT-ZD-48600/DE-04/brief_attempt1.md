@@ -11,8 +11,8 @@ Access for the secrets in all the environments ⁸
 ## Inputs (GitHub checkout; read them with Read, or context_get for a receipt)
 - feat.tasks (Engineering tasks with goal, AC, dependencies and size budget): `hobasa-data-engineering-agent/inputs/FEAT-ZD-48600/DE-04/feat.tasks.md` (from hobasa-design-agent/outputs/FEAT-ZD-48600/feat.tasks.md at commit b0fd4d2)
 - feat.design (HLD, LLD and contracts): `hobasa-data-engineering-agent/inputs/FEAT-ZD-48600/DE-04/feat.design.md` (from hobasa-design-agent/outputs/FEAT-ZD-48600/feat.design.md at commit 722a98f)
-- org.data_model (Data Model and Knowledge Graph): `hobasa-data-engineering-agent/inputs/FEAT-ZD-48600/DE-04/org.data_model.md` (from hobasa-agentic-sdlc/features/FEAT-ZD-48600/org-overrides/org.data_model.md at commit a6b3e2a)
-- task.repo_access (Repository (and Databricks) availability and write access): `hobasa-data-engineering-agent/inputs/FEAT-ZD-48600/DE-04/task.repo_access.md` (from hobasa-data-engineering-agent/outputs/FEAT-ZD-48600/task.repo_access.md at commit c7b4be8)
+- org.data_model (Data Model and Knowledge Graph): `hobasa-data-engineering-agent/inputs/FEAT-ZD-48600/DE-04/org.data_model.md` (from hobasa-agentic-sdlc/features/FEAT-ZD-48600/org-overrides/org.data_model.md at commit 3b03f15)
+- task.repo_access (Repository (and Databricks) availability and write access): `hobasa-data-engineering-agent/inputs/FEAT-ZD-48600/DE-04/task.repo_access.md` (from hobasa-data-engineering-agent/outputs/FEAT-ZD-48600/task.repo_access.md at commit aac590a)
 
 ## Outputs (write each file in full; the spine commits and pushes after evaluation and approval)
 - task.components (Components, layers, sources or pipelines to change): write `hobasa-data-engineering-agent/outputs/FEAT-ZD-48600/task.components.md`
