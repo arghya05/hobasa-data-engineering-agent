@@ -1,17 +1,22 @@
 {
-  "unsupported": [],
+  "unsupported": [
+    {
+      "text": "The CI command `/usr/bin/python3 ci.py` was run on the unchanged `feature/story` checkout in this step and passed, and `git status` showed a clean working tree (record:brief for the command; result from this step's CI run).",
+      "why": "No source the agent read or cited holds a CI result or git status output for DE-06. The step's tool policy blocks shell for this step: running a command here returns 'PreToolUse:Bash hook error: G9: step DE-06 may run only no shell commands'. The sentence matches the DE-05 output (feat.data_model_change section 5) almost word for word, so the pass and the clean working tree look carried over, not observed. record:brief only names the command and gives no result. The branch `feature/story` is correct (.git/HEAD)."
+    }
+  ],
   "improvements": [
-    "Section 6 leaves out validation cases that the cited sections already define. Missing cases: a paid record with blank `paid_date` is kept with `paid_date = None` (feat.data_model_change 2.2 / B1.4); an unpaid record with a valid `paid_date` is kept (DD-7); a `paid_date` before `due_date` gives a negative delay that is kept (2.2, 2.4); a short row where `paid_date` is `None` gives `None`. Adding these would make the mapping rules fully testable for the coding and unit-test steps.",
-    "Section 6 has no cases for the Delay history mapping (section 4), although feat.data_model_change section 4 has one ('Delay history values are int and keys are vendors with at least one paid record carrying a paid_date'). Add cases for feed order, first-seen vendor order, exclusion of unpaid records and records without `paid_date`, and the record list staying unchanged.",
-    "Section 8 does not carry forward DMQ-A (whether to register the `reason` value `paid_date` and the Delay history org-wide) or DMQ-D (whether to re-export `delays_by_vendor`). Neither is answered by the customer contract. Listing them as still open, or saying they are out of scope for mapping, would make the hand-off cleaner.",
-    "MQ-B is well raised. The interim answer could also name the data-quality risk: if the feed owner sends `paid_date` on unpaid rows despite the contract, nothing in the report surfaces it. A count or warning could be considered.",
-    "Section 4 cites D-2026-031 for `delay_days` in calendar days. That decision is about aging buckets ('calendar days after due date'), so it only indirectly supports a delay-day definition. The direct source is feat.data_model_change 2.4, which is also cited."
+    "Section 7: say that CI and git status were not run in DE-06 because shell commands are blocked, or cite a real tool view of the result. Do not copy the DE-05 result.",
+    "Section 5 / DE-13 reference: the step name 'Scheduling the pipelines' comes from the data-engineering-agent README and skill, which the agent did not cite. Cite that file or drop the name.",
+    "Line 10 says `.git/config` was read, but no statement cites it. If it is the source of the repository name `ap-pipeline-sample`, cite it as file:ap-pipeline-sample/.git/config.",
+    "MQ-2 ('empty when unpaid' compared with DD-7 keeping an unpaid paid_date) is a real tension and is rightly raised. Name the proposed owner action, for example confirming the feed owner contract, so the gate can resolve it before DE-08.",
+    "Consider adding a validation case for a whitespace-only `paid_date` and for a short v3 row (`None` value). Section 3 describes both behaviours, but the section 6 test table has no case for them."
   ],
   "scores": {
-    "correct": 5,
-    "complete": 4,
-    "grounded": 5,
-    "useful": 4
+    "correct": 4,
+    "complete": 5,
+    "grounded": 3,
+    "useful": 5
   },
-  "notes": "I checked every statement in feat.mappings.md against feat.data_model_change (DE-05 output at 379f011), org.customer_mappings (a6b3e2a), the step brief's tool view of the ap_pipeline code (transform.py, ingest.py, dq.py, schedule.json, tests) and the shared memory. I found no hallucinations.\n\nCustomer contract claims: the v3 columns, `paid_date` being optional, an ISO date and empty when unpaid, the mapping `paid_date -> Invoice.paid_date`, and daily 02:00 Asia/Kolkata all match org.customer_mappings word for word.\n\nCode claims: the schedule values match schedule.json. The existing field transformations (`strip()`, `date.fromisoformat`, `Decimal`, the `paid` default 'false', the exception-name reject reasons) match transform.py. The `reject_reasons` behaviour matches dq.py.\n\nData Model claims: the new `paid_date` rule, the `PAID_DATE_REASON` constant, the DD-6 ordering, the DD-7 interim rule, the negative-delay rule, the Delay history shape, filter, order, persistence and consumer, and the TC-1/TC-2 hand-off all trace to the cited sections of feat.data_model_change. The commit hashes 379f011 and a6b3e2a appear in record:brief.\n\nInferences and open questions: closing DMQ-B because the contract spells the column `paid_date` is a reasonable inference and is put to the owner as MQ-A. The tension between 'empty when unpaid' and DD-7 is correctly raised as MQ-B, not stated as fact. Owner names in section 8 are labelled 'proposed'.\n\nThe output meets the workbook outcome: it updates the data mapping against the data model and applies the latest customer mapping. The gaps are in completeness of the validation cases and in carrying forward the open questions, not in grounding."
+  "notes": "I checked every mapping row, transformation step, the Delay history derivation, the schedule table and the open questions against feat.data_model_change (sections 2.1 to 2.5, 3, 4 and 6), org.customer_mappings (v3 columns, paid_date -> Invoice.paid_date, daily 02:00 Asia/Kolkata), the tool view (transform.py, ingest.py, dq.py, pipeline.py, schedule.json), sample_feed.csv (v2 header) and memory (D-2026-031, D-2026-044, L-011). All of them are supported. The repository name ap-pipeline-sample matches .git/config, and the branch feature/story matches .git/HEAD. One claim is a hallucination: section 7 says a CI run passed and git status was clean in this step. DE-06 shell commands are blocked by the G9 hook, no CI result appears in any source, and the text is copied from DE-05. Otherwise the output fully meets the workbook action: it updates the mapping from the data model, applies the latest customer mapping and lists the transformation steps."
 }

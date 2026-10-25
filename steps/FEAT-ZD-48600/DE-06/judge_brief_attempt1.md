@@ -11,7 +11,10 @@
 - org.customer_mappings: `hobasa-data-engineering-agent/inputs/FEAT-ZD-48600/DE-06/org.customer_mappings.md`
 
 ## Other GitHub files the agent read (valid sources when cited as file:<repository>/<path>)
-- `~/.claude/projects/-Users-arghyamukherjee-Documents-automaiton-final-document-e2e-run-runs-run-20261025-123936-feat-zd-48600-workspace-ap-pipeline/d95a9ab2-0b2d-4c69-8fa6-65adcbb5e871/tool-results/hook-aac2e3ca-2762-4362-b999-d9e386504505-1-additionalContext.txt`
+- `~/.claude/projects/-Users-arghyamukherjee-Documents-automaiton-final-document-e2e-run-runs-run-20261025-141046-feat-zd-48600-workspace-ap-pipeline/318b10c0-3326-4661-9e00-69997103c1ff/tool-results/hook-41fb5d66-1a1c-4219-9617-9efbd91e4867-1-additionalContext.txt`
+- `hobasa-data-engineering-agent/outputs/FEAT-ZD-48600/feat.mappings.md`
+- `ap-pipeline-sample/.git/config`
+- `ap-pipeline-sample/data/sample_feed.csv`
 
 Shared memory and conventions: `memory/MEMORY.md` and `CLAUDE.md` in the SDLC repository.
 
@@ -26,14 +29,14 @@ Shared memory and conventions: `memory/MEMORY.md` and `CLAUDE.md` in the SDLC re
 - Gate (who approves this output): no gate: automated checks, the independent judge and sampled human evaluation
 
 ## Inputs (GitHub checkout; read them with Read, or context_get for a receipt)
-- feat.data_model_change (Data Model change for the feature): `hobasa-data-engineering-agent/inputs/FEAT-ZD-48600/DE-06/feat.data_model_change.md` (from hobasa-data-engineering-agent/outputs/FEAT-ZD-48600/feat.data_model_change.md at commit 379f011)
-- org.customer_mappings (Versioned customer data-mapping contracts and schedule frequency): `hobasa-data-engineering-agent/inputs/FEAT-ZD-48600/DE-06/org.customer_mappings.md` (from hobasa-agentic-sdlc/features/FEAT-ZD-48600/org-overrides/org.customer_mappings.md at commit a6b3e2a)
+- feat.data_model_change (Data Model change for the feature): `hobasa-data-engineering-agent/inputs/FEAT-ZD-48600/DE-06/feat.data_model_change.md` (from hobasa-data-engineering-agent/outputs/FEAT-ZD-48600/feat.data_model_change.md at commit 7b68a18)
+- org.customer_mappings (Versioned customer data-mapping contracts and schedule frequency): `hobasa-data-engineering-agent/inputs/FEAT-ZD-48600/DE-06/org.customer_mappings.md` (from hobasa-agentic-sdlc/features/FEAT-ZD-48600/org-overrides/org.customer_mappings.md at commit 3b03f15)
 
 ## Outputs (write each file in full; the spine commits and pushes after evaluation and approval)
 - feat.mappings (Updated data mappings and transformation steps): write `hobasa-data-engineering-agent/outputs/FEAT-ZD-48600/feat.mappings.md`
 
 ## Code
-Work in repository `ap-pipeline-sample` (Python 3.9 (standard library)). You may change only: src/ap_pipeline/. Run the CI yourself with `/usr/bin/python3 ci.py` from the repository root (or delegate to the ci-runner subagent) until it passes. Do not commit or push; the spine does.
+Work in repository `ap-pipeline-sample` (Python 3.9 (standard library)). You may change only: src/ap_pipeline/. Shell commands allowed in this step: `/usr/bin/python3 ci.py`, `git status`, `git diff`, `git log`. Run the CI yourself with `/usr/bin/python3 ci.py` from the repository root (or delegate to the ci-runner subagent) until it passes. Do not commit or push; the spine does.
 
 ## How to work
 Decide the best way to do this step from the inputs and the workbook action, plan it (TodoWrite for multi-part work), then do it. Helper subagents you can delegate to: explorer, verifier, ci-runner (use the verifier before you finish when the output makes many factual statements). Use the shared memory (memory_search) for decisions and lessons. Connectors approved for you: api:osv (Known vulnerabilities for a dependency version (POST /v1/query with {"package":{"name":...,"ecosystem":"PyPI|npm"},"version":...})), api:pypi (Python package metadata: latest version, licence, release dates (GET /pypi/<package>/json)). Use one only when your inputs do not hold what you need; request a missing one with capability_request. You may also read any other file in the GitHub checkouts your step needs (for example other requirements when grouping, or code); cite it as file:<repository>/<path>.

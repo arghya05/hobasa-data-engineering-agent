@@ -1,0 +1,17 @@
+{
+  "unsupported": [],
+  "improvements": [
+    "Section 5 names the step \"DE-13 Scheduling the pipelines\" but cites only org.customer_mappings and schedule.json. The step name comes from the data-engineering-steps skill (SKILL.md: '## DE-13 Scheduling the pipelines') and the agent README. Cite that source, or just say 'the scheduling step'.",
+    "Section 2 gives `amount` the target type 'Decimal, 2 dp', but the rule `Decimal(...)` does no quantizing. transform.py accepts '1' unchanged, and test_paid_flag uses amount 1. Say whether 2 dp is enforced by the mapping or is only the registered model type. Otherwise list it as an open question for DE-08/DE-09.",
+    "Section 7 says no code changed but does not say whether CI was run in this step. The brief allows `/usr/bin/python3 ci.py`. State plainly that no CI was run (or give the real result), so the gate does not have to infer it.",
+    "The derived Delay history rule cites record:memory D-2026-031 for calendar days. That decision is about aging buckets. The calendar-day delay rule actually comes from feat.data_model_change 2.4 (NF-2/DC-2), so cite that as the main source.",
+    "The mapping could note that data/sample_feed.csv row INV-2 is paid=true and has no paid_date column (v2). Under the mapping it gives a paid record with paid_date=None that is kept but left out of the Delay history. That makes it a handy existing fixture for the 'paid with no paid_date' rule."
+  ],
+  "scores": {
+    "correct": 5,
+    "complete": 4,
+    "grounded": 5,
+    "useful": 5
+  },
+  "notes": "I checked every statement in feat.mappings.md against feat.data_model_change (DE-05), org.customer_mappings, the brief's tool view (transform.py, ingest.py, dq.py, pipeline.py, schedule.json), data/sample_feed.csv, .git/config (remote ap-pipeline-sample, which supports the file:ap-pipeline-sample/... citations) and shared memory. The earlier refused claim, that CI was run and git status was clean, has been removed. No CI or git result is claimed anywhere. All of these match their sources: the v3 columns, the paid_date -> Invoice.paid_date mapping, the 'empty when unpaid' format, daily 02:00 Asia/Kolkata, the commit IDs 7b68a18 and 3b03f15, the reject reasons, PAID_DATE_REASON, DD-6/DD-7, DMQ-1 to DMQ-5, IN-3/IN-7, the ap_aging overdue_with_risk and ap_forecast vendor_risk consumers, and the validation cases ('2026-13-01', 'not-a-date'). The new open questions MQ-1 to MQ-4 are framed correctly as questions, with interim answers. MQ-2 rightly flags the gap between the contract's 'empty when unpaid' and DD-7. The output meets the workbook action: it updates the mapping from the data model, applies the latest customer mapping and gives ordered transformation steps. Only minor citation and precision points remain."
+}

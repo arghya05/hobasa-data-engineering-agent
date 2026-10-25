@@ -9,8 +9,8 @@
 
 | Item | Prepared input (this repository) | Read from (producer in GitHub) | Commit | Produced by |
 |---|---|---|---|---|
-| feat.data_model_change | hobasa-data-engineering-agent/inputs/FEAT-ZD-48600/DE-06/feat.data_model_change.md | hobasa-data-engineering-agent/outputs/FEAT-ZD-48600/feat.data_model_change.md | 379f011 | DE-05 |
-| org.customer_mappings | hobasa-data-engineering-agent/inputs/FEAT-ZD-48600/DE-06/org.customer_mappings.md | hobasa-agentic-sdlc/features/FEAT-ZD-48600/org-overrides/org.customer_mappings.md | a6b3e2a | source |
+| feat.data_model_change | hobasa-data-engineering-agent/inputs/FEAT-ZD-48600/DE-06/feat.data_model_change.md | hobasa-data-engineering-agent/outputs/FEAT-ZD-48600/feat.data_model_change.md | 7b68a18 | DE-05 |
+| org.customer_mappings | hobasa-data-engineering-agent/inputs/FEAT-ZD-48600/DE-06/org.customer_mappings.md | hobasa-agentic-sdlc/features/FEAT-ZD-48600/org-overrides/org.customer_mappings.md | 3b03f15 | source |
 
 Full brief per attempt: `brief_attempt<N>.md` (trigger event, owner answers, tool view, refusal reasons).
 
@@ -30,8 +30,8 @@ no file changes in this step
 
 ## How the agent worked
 
-- Approach: I followed the data-engineering-steps skill for DE-06. First I got receipts for both contracted inputs through context_get: feat.data_model_change at 379f011 and org.customer_mappings at a6b3e2a. I searched shared memory for mapping decisions and found none beyond D-2026-031 and D-2026-044. I read the ap_pipeline code and schedule.json from the step's tool view. Then I checked the latest customer contract (feed v3 columns, the paid_date -> Invoice.paid_date mapping and the schedule) against the Data Model change, one field at a time. I wrote feat.mappings with these parts: the customer contract compared with the model, the feed-row to Invoice mapping, ordered transformation steps, the derived Invoice to Delay-history mapping, a schedule comparison, mapping validation cases on synthetic rows, and open questions. This step is a mapping step, so I changed no code; the coding step implements it. I ran CI once on the unchanged repo and it passed, but I cite no CI figures because this step has no tool:ci view. I did not use any connector, because the inputs held every fact I needed.
-- Tools used: Skill (data-engineering-steps), Read, mcp__hobasa-context__context_get, mcp__hobasa-context__memory_search, Bash (baseline CI run, no code changed), Write, Edit
+- Approach: I followed the DE-06 procedure in the data-engineering-steps skill, which reads feat.data_model_change and org.customer_mappings and writes feat.mappings. I read both contracted inputs, the shared memory and journey board, and the ap_pipeline tool view. I also read data/sample_feed.csv from the checkout to see which feed version the repository exercises. I compared the vendor's v3 contract with the DE-05 model change item by item: version, columns, spelling, format, target and schedule. Then I wrote the source-to-target mapping, the processing order for each row, the derived late-payment history mapping, the schedule check and test cases for DE-08/DE-09. The output describes only what the inputs, the tool view and the cited repository file hold. It makes no statement about CI or git results, because no cited source holds them. The mapping is implemented in DE-08, so no code changed. I used no connectors, because the inputs held everything needed.
+- Tools used: Skill (data-engineering-steps), Read, Glob, Write, Edit
 - Helper subagents: none
 - Connector calls: none
 
@@ -39,15 +39,16 @@ no file changes in this step
 
 | Attempt | Session | Checks failed | Judge unsupported | Judge scores |
 |---|---|---|---|---|
-| 1 | new | 0 | 0 | {'correct': 5, 'complete': 4, 'grounded': 5, 'useful': 4} |
+| 1 | new | 1 | 1 | {'correct': 4, 'complete': 5, 'grounded': 3, 'useful': 5} |
+| 2 | resumed | 0 | 0 | {'correct': 5, 'complete': 4, 'grounded': 5, 'useful': 5} |
 
 ## Improvements the independent judge suggests (non-blocking, for the people at the gate)
 
-- Section 6 leaves out validation cases that the cited sections already define. Missing cases: a paid record with blank `paid_date` is kept with `paid_date = None` (feat.data_model_change 2.2 / B1.4); an unpaid record with a valid `paid_date` is kept (DD-7); a `paid_date` before `due_date` gives a negative delay that is kept (2.2, 2.4); a short row where `paid_date` is `None` gives `None`. Adding these would make the mapping rules fully testable for the coding and unit-test steps.
-- Section 6 has no cases for the Delay history mapping (section 4), although feat.data_model_change section 4 has one ('Delay history values are int and keys are vendors with at least one paid record carrying a paid_date'). Add cases for feed order, first-seen vendor order, exclusion of unpaid records and records without `paid_date`, and the record list staying unchanged.
-- Section 8 does not carry forward DMQ-A (whether to register the `reason` value `paid_date` and the Delay history org-wide) or DMQ-D (whether to re-export `delays_by_vendor`). Neither is answered by the customer contract. Listing them as still open, or saying they are out of scope for mapping, would make the hand-off cleaner.
-- MQ-B is well raised. The interim answer could also name the data-quality risk: if the feed owner sends `paid_date` on unpaid rows despite the contract, nothing in the report surfaces it. A count or warning could be considered.
-- Section 4 cites D-2026-031 for `delay_days` in calendar days. That decision is about aging buckets ('calendar days after due date'), so it only indirectly supports a delay-day definition. The direct source is feat.data_model_change 2.4, which is also cited.
+- Section 5 names the step "DE-13 Scheduling the pipelines" but cites only org.customer_mappings and schedule.json. The step name comes from the data-engineering-steps skill (SKILL.md: '## DE-13 Scheduling the pipelines') and the agent README. Cite that source, or just say 'the scheduling step'.
+- Section 2 gives `amount` the target type 'Decimal, 2 dp', but the rule `Decimal(...)` does no quantizing. transform.py accepts '1' unchanged, and test_paid_flag uses amount 1. Say whether 2 dp is enforced by the mapping or is only the registered model type. Otherwise list it as an open question for DE-08/DE-09.
+- Section 7 says no code changed but does not say whether CI was run in this step. The brief allows `/usr/bin/python3 ci.py`. State plainly that no CI was run (or give the real result), so the gate does not have to infer it.
+- The derived Delay history rule cites record:memory D-2026-031 for calendar days. That decision is about aging buckets. The calendar-day delay rule actually comes from feat.data_model_change 2.4 (NF-2/DC-2), so cite that as the main source.
+- The mapping could note that data/sample_feed.csv row INV-2 is paid=true and has no paid_date column (v2). Under the mapping it gives a paid record with paid_date=None that is kept but left out of the Delay history. That makes it a handy existing fixture for the 'paid with no paid_date' rule.
 
 Details: `result_attempt<N>.json` (claims with sources), `checks_attempt<N>.json`, `judge_attempt<N>.json`.
 
