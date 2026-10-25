@@ -1,0 +1,21 @@
+{
+  "unsupported": [
+    {
+      "text": "SS-1 | ... Coding does not read the production feed, and this lane never reads source-system production data. | ... | feat.tasks (TSK-01 \"Depends on\"); record:brief",
+      "why": "Neither cited source states the general rule that the lane 'never reads source-system production data'. feat.tasks only says to build on synthetic v3 rows, and the brief says nothing about production data. The rule appears in the agent's own definition (.claude/agents/data-engineering.md: 'synthetic data only; never source-system production data'), which is not cited. The citation therefore does not support this statement."
+    }
+  ],
+  "improvements": [
+    "SS-2 describes DE-13 as 'scheduling' and DE-14 as 'pipeline status notifications by email and Teams' and cites record:brief, but the brief does not mention either step. The descriptions match the data-engineering-steps skill (DE-13 'Scheduling the pipelines', DE-14 'Notifications in email and teams'). Cite that skill file, or file:<repo>/<path>, instead. This is not blocking because SS-2 is framed as a risk ('may need').",
+    "Section 2 counts the `dev` and `main` branches as 'environments'. No source defines deployment environments for ap_pipeline. Say that this is the agent's reading and that the tool view is repository-wide.",
+    "The tool view reports permissions for the whole repository, not for the agent identity in each environment. Add a short note that granted access per environment was taken from that one repository-level line.",
+    "The Result row cites feat.tasks for 'no access request is needed'. The decisive source is tool:repo-access. feat.tasks only supports the conclusion that the tasks touch no external systems, which is fine but should be kept separate."
+  ],
+  "scores": {
+    "correct": 5,
+    "complete": 4,
+    "grounded": 4,
+    "useful": 4
+  },
+  "notes": "I checked every statement against feat.tasks (b0fd4d2), the step brief, the tool view ('no secrets are required or granted for this repository (permission table)') and the approved DE-01 output journey:task.repo_access. The following are supported:\n- Task scopes: TSK-01 changes transform.py/to_model with paid_date; its must-not-change list includes ingest.py, pipeline.py and schedule.json; it builds on synthetic v3 rows. TSK-02 adds a pure delays.py with no I/O.\n- Python 3.9 standard library only (DD-1).\n- Databricks is not applicable, and P-1 found no workspace credential.\n- Branch feature/story and the CI command /usr/bin/python3 ci.py (P-5, P-7).\n- PQ-6 gates release of TSK-01.\n- org.permission_table is handled by reference only.\n- The conclusion: no secrets are required or granted, there is no gap, and no request is needed.\n\nThere is one citation mismatch. In SS-1 the 'never reads source-system production data' rule is true according to the agent's own definition file, but it is attributed to sources that do not state it. SS-2 has a similar mismatch, but it is framed as a risk, so it is listed under improvements. The output does meet the workbook outcome: it shows clearly that ap_pipeline needs no secrets and that no access request is needed."
+}

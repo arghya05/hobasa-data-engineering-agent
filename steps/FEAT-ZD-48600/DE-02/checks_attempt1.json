@@ -1,0 +1,5 @@
+{
+  "failures": [
+    "G1 judge found an unsupported statement: \"SS-1 | ... Coding does not read the production feed, and this lane never reads source-system production data. | ... | feat.tasks (TSK-01 \"Depends on\"); record:b\" (Neither cited source states the general rule that the lane 'never reads source-system production data'. feat.tasks only says to build on synthetic v3 rows, and )"
+  ]
+}
