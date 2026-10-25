@@ -1,0 +1,27 @@
+{
+  "unsupported": [
+    {
+      "text": "The spine runs push and merge.",
+      "why": "The SDLC CLAUDE.md says only that 'the spine commits and pushes after human evaluation'. No source says the spine merges. Merging to dev is a separate Deployment agent action ('Merge to dev branch'). The sources cited on that line (org.engineering_stack; feat.tasks section 2) say nothing about who pushes or merges."
+    },
+    {
+      "text": "RA-2: \"This step allows no shell commands, so it ran no push or CI.\" (cited tool:repo-access; record:brief)",
+      "why": "The statement is true: the G9 hook blocks shell for DE-01 ('G9: step DE-01 may run only no shell commands'). But neither cited source says it. The brief and the tool:repo-access view say nothing about shell permissions, so the citation does not support the statement."
+    }
+  ],
+  "improvements": [
+    "Delete the two duplicated trailing lines '[Tool result] [ap_pipeline] Branch feature/story at 3fcbe1b; write access confirmed' (lines 53-56). They are stray tool-echo text, not part of the document.",
+    "Section 2 and RA-2 use step names and contents ('DE-02 (secrets)', 'DE-02 still checks the permission table', 'DE-03 (database changes)', 'DE-09', 'DE-10') that come from the data-engineering-steps skill / agent README, but they cite org.engineering_stack or record:brief. Cite the skill or README file, or drop the step-content detail. Also, DE-09 is 'Unit Test Cases', not explicitly 'the first CI run'.",
+    "Attribute the push to the spine with the SDLC CLAUDE.md as the source, and remove 'merge'. Merging is the Deployment agent's step.",
+    "P-5 says only that the branch was 'created from dev at 3fcbe1b'. The .git/logs entry shows the branch was created by 'Hobasa Agent Spine', and dev/main refs are available. The agent could read these with Read (not shell) to independently confirm the tool view, then cite file:ap_pipeline/.git/logs/refs/heads/feature/story.",
+    "P-8 (version 0.4.0) cites only feat.tasks. src/ap_pipeline/__init__.py contains __version__ = \"0.4.0\" and could be read and cited directly to confirm it.",
+    "RA-1 rightly flags that the branch name 'feature/story' departs from the 'feature/<story>' convention for two stories. Consider listing it as an explicit non-blocking open question with an owner (Developer / spine) instead of only an observation."
+  ],
+  "scores": {
+    "correct": 4,
+    "complete": 4,
+    "grounded": 4,
+    "useful": 4
+  },
+  "notes": "The core facts check out against the sources:\n- Databricks is not applicable (org.engineering_stack: 'No repository uses Databricks or a database'; tool view).\n- ap_pipeline is available locally (Python 3.9, standard library), with no repository creation needed.\n- Branch feature/story was created from dev at 3fcbe1b, and the git reflog independently shows 3fcbe1b created by Hobasa Agent Spine.\n- Write access is confirmed with a clean status.\n- The CI command and the 90% coverage bar are correct.\n- The task CI bar items, version 0.4.0 (which matches __init__.py), and the TSK-01/TSK-02 file budgets all match feat.tasks.\n\nThe previous G2 refusals (citing files that were never read) are fixed: the output no longer cites any file: sources.\n\nTwo minor grounding problems remain:\n- 'The spine runs ... merge' is not stated in any source.\n- The no-shell statement cites sources that do not contain it.\n\nThe two duplicated '[Tool result]' lines at the end are formatting debris. The output meets the workbook outcome: the repo is available with write access, and Databricks is correctly marked not applicable."
+}

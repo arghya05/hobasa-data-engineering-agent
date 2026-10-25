@@ -1,0 +1,6 @@
+{
+  "failures": [
+    "G1 judge found an unsupported statement: \"The spine runs push and merge.\" (The SDLC CLAUDE.md says only that 'the spine commits and pushes after human evaluation'. No source says the spine merges. Merging to dev is a separate Deploymen)",
+    "G1 judge found an unsupported statement: \"RA-2: \"This step allows no shell commands, so it ran no push or CI.\" (cited tool:repo-access; record:brief)\" (The statement is true: the G9 hook blocks shell for DE-01 ('G9: step DE-01 may run only no shell commands'). But neither cited source says it. The brief and the)"
+  ]
+}

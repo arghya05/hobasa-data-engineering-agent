@@ -1,0 +1,16 @@
+{
+  "unsupported": [],
+  "improvements": [
+    "P-8 cites only feat.tasks for ap_pipeline being at 0.4.0. The agent also read file:ap_pipeline/src/ap_pipeline/__init__.py, which shows __version__ = \"0.4.0\". Citing it would ground the version in the code as well as the plan.",
+    "P-4 (main and dev exist) and P-5 (feature/story created from dev at 3fcbe1b) could also cite the git refs the agent read: .git/refs/heads/dev is 3fcbe1bad11e\u2026, and .git/logs/refs/heads/feature/story records 'branch: Created from HEAD' at 3fcbe1b. As written, P-4 rests on the org convention and the task file, not on the repository.",
+    "A stray line sits at the end of the file after the validation table: '[Tool result] [ap_pipeline] Branch feature/story at 3fcbe1b; write access confirmed'. It matches the tool view but has no section or citation. Remove it or put it in a cited section.",
+    "P-1 says Databricks is not applicable. The workbook outcome reads 'Databricks and Repo is available with write access', so it would help to state once, in the Result row, that the Databricks half of the outcome is satisfied as not applicable under org.engineering_stack ('No repository uses Databricks or a database'). That makes clear to reviewers that it was not skipped."
+  ],
+  "scores": {
+    "correct": 5,
+    "complete": 4,
+    "grounded": 5,
+    "useful": 4
+  },
+  "notes": "I checked every statement against the brief, the tool view (tool:repo-access), feat.tasks and org.engineering_stack, and also against the ap_pipeline files the agent read. I read the git refs and __init__.py with Read; the G9 hook blocks shell for DE-01. Both earlier refusal points are fixed. The 'spine runs push and merge' claim is gone. RA-2 now says only that write access is as reported by the tool view and that the output claims no push or CI run of its own.\n\nThese all check out against their sources:\n- Branch feature/story from dev at 3fcbe1b: tool view and the git reflog.\n- Write access with a clean git status, Python 3.9 standard library, and no Databricks: tool view and org.engineering_stack.\n- CI command /usr/bin/python3 ci.py with coverage >= 90%, and the CI bar (Python 3.9 syntax, no print/eval/exec/bare except, lines <= 140 characters): org.engineering_stack and feat.tasks section 2.\n- Version 0.4.0: feat.tasks, and __init__.py agrees.\n- TSK-01 and TSK-02 file budgets, and schedule.json on the must-not-change list: feat.tasks.\n- Branch and commit conventions: feat.tasks section 2 and org.engineering_stack.\n\nI found no invented facts, contradictions or unsupported numbers. The output meets the workbook outcome: the repository is available with write access, and Databricks is correctly marked not applicable."
+}
