@@ -34,20 +34,21 @@ no file changes in this step
 
 | Attempt | Session | Problems found by the checks | Unsupported statements (judge) | Judge scores |
 |---|---|---|---|---|
-| 1 | new | 1 | 1 | {'correct': 5, 'complete': 4, 'grounded': 4, 'useful': 4} |
+| 1 | new | 2 | — | — |
 | 2 | continued | 0 | 0 | {'correct': 5, 'complete': 4, 'grounded': 5, 'useful': 4} |
 
 Improvements the independent judge suggests (non-blocking):
 
-- Write access and the clean working tree rest only on tool:repo-access and the spine's tool result. Nothing in the checkout confirms them, because `.git/config` has no upstream for `feature/story`. RA-1 says this, but the outcome line could say directly that remote push access to origin has not been tested yet and will only be tested when the spine first pushes.
-- The branch is named literally `feature/story`, while the convention in org.engineering_stack and ap_pipeline/CLAUDE.md is a 'feature branch per story' (`feature/<story>`). Row 24 still marks the branch model as 'Matches the convention'. That conflicts a little with RAQ-1. The row could say 'partially matches; per-story naming is pending RAQ-1'.
-- RAQ-2 names DE-08/DE-09 as the steps where `coverage` will be confirmed. That is consistent with the step list in the data-engineering skill (DE-08 Coding, DE-09 Unit Test Cases). Citing that skill file would make the reference traceable.
-- The Databricks check is marked not applicable based on org.engineering_stack and the tool view. Saying explicitly that the workbook outcome 'Databricks ... available with write access' is therefore met as N/A, not as a pass, would help the people at the gate.
+- RAQ-1 and RAQ-3 each give an interim answer that is really a default the agent picked: 'Work on feature/story as provided' and 'The spine pushes and sets the upstream'. No source says the spine sets the upstream. hobasa-agentic-sdlc/CLAUDE.md says nothing is assumed. These should be plain questions to the owner with no interim decision, or BLOCKING ones if they matter before DE-08.
+- RAQ-1: one shared branch named `feature/story` for both STORY-01 and STORY-02 departs from the 'feature branches per story' rule in org.engineering_stack and feat.tasks section 2. Consider asking the spine operator to confirm this before coding instead of marking it non-blocking.
+- RAQ-2 says 'This step allows no shell commands' but cites no source. The spine's hook enforces it (G9), but it is not among the cited sources. Cite the restriction or reword it as an observation.
+- The 'Push to remote' row says 'agents do not push', citing record:brief. DE-10 in data-engineering-steps SKILL.md lists 'Push the code to central/main repository' as the lane's action. Say that the push happens at DE-10 and the spine carries it out, so a reader does not see a conflict.
+- Row 'Databricks access: Not applicable' rests on org.engineering_stack and the tool view. Say who confirms that the lane has no Databricks dependency in future steps (for example DE-13 scheduling), because the workbook outcome expects Databricks to be available.
 
 ## How the agent worked
 
-- **Approach:** I followed the DE-01 procedure in the data-engineering-steps skill. First I read both inputs. feat.tasks puts the DE lane tasks TSK-01 and TSK-02 in ap_pipeline, and org.engineering_stack states there is no Databricks or database. Shell commands are not allowed in this step, so I checked the repository by reading its files: the git metadata (HEAD, the refs for main, dev and feature/story, config), CLAUDE.md, README.md, ci.py, the version file, every source module, the existing test file and the synthetic sample feed. I combined these with the tool:repo-access view, which reports availability, write access, the clean tree and the branch. Each repository fact in the output cites the file:ap_pipeline/<path> I read for it; tool:repo-access is cited only for what the tool view states.
-- **Tools used:** Skill:data-engineering-steps, Read, Glob, Write, tool:repo-access (step tool view)
+- **Approach:** I read both contracted inputs (feat.tasks, org.engineering_stack). The step hook blocks shell commands in DE-01, so I checked ap_pipeline by reading its git metadata (.git/HEAD, .git/config, the HEAD, dev and feature/story reflogs) and its repository files with Read. The files were __init__.py, transform.py, ingest.py, dq.py, pipeline.py, schedule.json, ci.py, README.md, CLAUDE.md and tests/test_pipeline.py. I matched them against the tool view and the TSK-01 and TSK-02 budgets in feat.tasks. Every file cited in the output was read in this session. I used no connectors because the inputs and checkout held the needed facts.
+- **Tools used:** Skill:data-engineering-steps, Read, Glob, Write
 - **Helper subagents:** none
 - **Connector calls:** none
 
