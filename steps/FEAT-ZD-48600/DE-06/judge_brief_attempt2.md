@@ -11,10 +11,21 @@
 - org.customer_mappings: `hobasa-data-engineering-agent/inputs/FEAT-ZD-48600/DE-06/org.customer_mappings.md`
 
 ## Other GitHub files the agent read (valid sources when cited as file:<repository>/<path>)
-- `~/.claude/projects/-Users-arghyamukherjee-Documents-automaiton-final-document-e2e-run-runs-run-20261025-141046-feat-zd-48600-workspace-ap-pipeline/318b10c0-3326-4661-9e00-69997103c1ff/tool-results/hook-41fb5d66-1a1c-4219-9617-9efbd91e4867-1-additionalContext.txt`
+- `~/.claude/projects/-Users-arghyamukherjee-Documents-automaiton-final-document-e2e-run-runs-run-20261025-205213-feat-zd-48600-workspace-ap-pipeline/98951978-f8ff-4b19-a875-c345c1b4926c/tool-results/hook-fbec6b36-27a8-4cb9-b873-8e096761a760-1-additionalContext.txt`
+- `hobasa-data-engineering-agent/.claude/skills/data-engineering-steps/SKILL.md`
+- `hobasa-data-engineering-agent/CLAUDE.md`
 - `hobasa-data-engineering-agent/outputs/FEAT-ZD-48600/feat.mappings.md`
-- `ap-pipeline-sample/.git/config`
+- `ap-aging-sample/CLAUDE.md`
+- `ap-forecast-sample/CLAUDE.md`
+- `ap-pipeline-sample/CLAUDE.md`
+- `ap-pipeline-sample/README.md`
 - `ap-pipeline-sample/data/sample_feed.csv`
+- `ap-portal-sample/CLAUDE.md`
+- `hobasa-agentic-sdlc/CLAUDE.md`
+- `hobasa-agentic-sdlc/features/FEAT-ZD-48600/JOURNEY.md`
+- `hobasa-agentic-sdlc/memory/MEMORY.md`
+- `final_document/hobasa-claude-code-plugin/skills/data-engineering-steps/SKILL.md`
+- `final_document/hobasa-claude-code-plugin/skills/grounded-output/SKILL.md`
 
 Shared memory and conventions: `memory/MEMORY.md` and `CLAUDE.md` in the SDLC repository.
 
@@ -23,7 +34,7 @@ Shared memory and conventions: `memory/MEMORY.md` and `CLAUDE.md` in the SDLC re
 Your previous result for this step was refused. Fix every point, rewrite the output files in full, and return the structured result again. The outputs describe the work itself: never mention earlier attempts, refusals or this review in them.
 
 ## Refusal reasons
-G1 judge found an unsupported statement: "The CI command `/usr/bin/python3 ci.py` was run on the unchanged `feature/story` checkout in this step and passed, and `git status` showed a clean working tree " (No source the agent read or cited holds a CI result or git status output for DE-06. The step's tool policy blocks shell for this step: running a command here re)
+G3 numbers ['100.0'] in "No code was changed in this step. CI passes on the current baseline: 3 tests run, 0 failures, 0 erro" do not appear in tool:repo
 
 ## Step brief (unchanged except the attempt number)
 # Step DE-06: Data Mapping (attempt 2) for FEAT-ZD-48600
@@ -35,17 +46,17 @@ G1 judge found an unsupported statement: "The CI command `/usr/bin/python3 ci.py
 - Gate (who approves this output): no gate: automated checks, the independent judge and sampled human evaluation
 
 ## Inputs (GitHub checkout; read them with Read, or context_get for a receipt)
-- feat.data_model_change (Data Model change for the feature): `hobasa-data-engineering-agent/inputs/FEAT-ZD-48600/DE-06/feat.data_model_change.md` (from hobasa-data-engineering-agent/outputs/FEAT-ZD-48600/feat.data_model_change.md at commit 7b68a18)
-- org.customer_mappings (Versioned customer data-mapping contracts and schedule frequency): `hobasa-data-engineering-agent/inputs/FEAT-ZD-48600/DE-06/org.customer_mappings.md` (from hobasa-agentic-sdlc/features/FEAT-ZD-48600/org-overrides/org.customer_mappings.md at commit 3b03f15)
+- feat.data_model_change (Data Model change for the feature): `hobasa-data-engineering-agent/inputs/FEAT-ZD-48600/DE-06/feat.data_model_change.md` (from hobasa-data-engineering-agent/outputs/FEAT-ZD-48600/feat.data_model_change.md at commit 3943254)
+- org.customer_mappings (Versioned customer data-mapping contracts and schedule frequency): `hobasa-data-engineering-agent/inputs/FEAT-ZD-48600/DE-06/org.customer_mappings.md` (from hobasa-agentic-sdlc/features/FEAT-ZD-48600/org-overrides/org.customer_mappings.md at commit e8afce8)
 
 ## Outputs (write each file in full; the spine commits and pushes after evaluation and approval)
 - feat.mappings (Updated data mappings and transformation steps): write `hobasa-data-engineering-agent/outputs/FEAT-ZD-48600/feat.mappings.md`
 
 ## Code
-Work in repository `ap-pipeline-sample` (Python 3.9 (standard library)). You may change only: src/ap_pipeline/. Shell commands allowed in this step: `/usr/bin/python3 ci.py`, `git status`, `git diff`, `git log`. Run the CI yourself with `/usr/bin/python3 ci.py` from the repository root (or delegate to the ci-runner subagent) until it passes. Do not commit or push; the spine does.
+Work in repository `ap-pipeline-sample` (Python 3.9 (standard library)). You may change only: src/ap_pipeline/. Understand before you change: the repository is indexed with CodeGraph. Before editing, use it (MCP tools codegraph_explore and codegraph_node with projectPath `ap-pipeline-sample`, or `codegraph explore <symbols>`, `codegraph impact <symbol>`, `codegraph callers <symbol>`) to read the exact source of what you change, its callers and callees and the blast radius. After editing, run `codegraph sync` and `codegraph affected <changed files>` to find the tests your change touches, and run them through the CI. Shell commands allowed in this step: `/usr/bin/python3 ci.py`, `git status`, `git diff`, `git log`, `codegraph explore`, `codegraph node`, `codegraph callers`, `codegraph callees`, `codegraph impact`, `codegraph affected`, `codegraph query`, `codegraph files`, `codegraph status`, `codegraph sync`. Run the CI yourself with `/usr/bin/python3 ci.py` from the repository root (or delegate to the ci-runner subagent) until it passes. Do not commit or push; the spine does.
 
 ## How to work
-Decide the best way to do this step from the inputs and the workbook action, plan it (TodoWrite for multi-part work), then do it. Helper subagents you can delegate to: explorer, verifier, ci-runner (use the verifier before you finish when the output makes many factual statements). Use the shared memory (memory_search) for decisions and lessons. Connectors approved for you: api:osv (Known vulnerabilities for a dependency version (POST /v1/query with {"package":{"name":...,"ecosystem":"PyPI|npm"},"version":...})), api:pypi (Python package metadata: latest version, licence, release dates (GET /pypi/<package>/json)). Use one only when your inputs do not hold what you need; request a missing one with capability_request. You may also read any other file in the GitHub checkouts your step needs (for example other requirements when grouping, or code); cite it as file:<repository>/<path>.
+Decide the best way to do this step from the inputs and the workbook action, plan it (TodoWrite for multi-part work), then do it. Helper subagents you can delegate to: explorer, verifier, ci-runner (use the verifier before you finish when the output makes many factual statements). Use the shared memory (memory_search) for decisions and lessons. Connectors approved for you: api:osv (Known vulnerabilities for a dependency version (POST /v1/query with {"package":{"name":...,"ecosystem":"PyPI|npm"},"version":...})), api:pypi (Python package metadata: latest version, licence, release dates (GET /pypi/<package>/json)), mcp:codegraph (Code intelligence over the repository: a symbol's source, its callers and callees, the blast radius of a change and the tests it affects (codegraph_explore, codegraph_node and related tools; pass projectPath = the repository checkout)). Use one only when your inputs do not hold what you need; request a missing one with capability_request. You may also read any other file in the GitHub checkouts your step needs (for example other requirements when grouping, or code); cite it as file:<repository>/<path>.
 
 ## Tool view (cite as tool:repo)
 --- ap_pipeline/src/ap_pipeline/__init__.py ---
@@ -136,4 +147,4 @@ if __name__ == "__main__":
     unittest.main()
 
 
-Finish with the structured result: approach, tools_used, claims (each citing an input item name, a tool view, api:<name>, mcp:<server>, file:<repository>/<path> for any other GitHub file you read, record:intake, record:owner_answer, record:memory or record:brief for this brief; a claim drawing on several sources lists them separated by ';'; every number must appear in what you cite), open questions (BLOCKING: only when you cannot finish), summary.
+Finish with the structured result: approach, tools_used, claims (each citing an input item name, a tool view, api:<name>, mcp:<server>, file:<repository>/<path> for any other GitHub file you read, record:intake, record:owner_answer, record:memory or record:brief for this brief; a claim drawing on several sources lists them separated by ';'; every number must appear in what you cite), open questions (anything missing or unclear: BLOCKING: <what you need and who should answer>; never assume), summary.

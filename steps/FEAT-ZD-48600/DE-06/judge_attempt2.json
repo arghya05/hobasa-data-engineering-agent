@@ -1,17 +1,21 @@
 {
-  "unsupported": [],
+  "unsupported": [
+    {
+      "text": "The next step, DE-07, reads this file together with task.components (record:brief).",
+      "why": "The citation doesn't support the claim. The step brief (record:brief) never mentions DE-07 or what it reads. The claim is true, but only the data-engineering-steps SKILL.md says it (\"DE-07 ... Reads: feat.mappings, task.components\"), and the output doesn't cite that file."
+    }
+  ],
   "improvements": [
-    "Section 5 names the step \"DE-13 Scheduling the pipelines\" but cites only org.customer_mappings and schedule.json. The step name comes from the data-engineering-steps skill (SKILL.md: '## DE-13 Scheduling the pipelines') and the agent README. Cite that source, or just say 'the scheduling step'.",
-    "Section 2 gives `amount` the target type 'Decimal, 2 dp', but the rule `Decimal(...)` does no quantizing. transform.py accepts '1' unchanged, and test_paid_flag uses amount 1. Say whether 2 dp is enforced by the mapping or is only the registered model type. Otherwise list it as an open question for DE-08/DE-09.",
-    "Section 7 says no code changed but does not say whether CI was run in this step. The brief allows `/usr/bin/python3 ci.py`. State plainly that no CI was run (or give the real result), so the gate does not have to infer it.",
-    "The derived Delay history rule cites record:memory D-2026-031 for calendar days. That decision is about aging buckets. The calendar-day delay rule actually comes from feat.data_model_change 2.4 (NF-2/DC-2), so cite that as the main source.",
-    "The mapping could note that data/sample_feed.csv row INV-2 is paid=true and has no paid_date column (v2). Under the mapping it gives a paid record with paid_date=None that is kept but left out of the Delay history. That makes it a handy existing fixture for the 'paid with no paid_date' rule."
+    "MQ-4 (a paid_date cell holding only whitespace) is listed as non-blocking, yet the output still picks an interim answer (\"Treat as blank (None)\"). feat.design B1.2 (`None when the value is missing, None or blank; else date.fromisoformat(value.strip())`) doesn't settle this case. Under the conventions ('Nothing is assumed ... becomes a BLOCKING question'), either point to a source that answers it or make it a BLOCKING question to the Data modeler, not a default.",
+    "The 'Background read' row cites journey:feat.design for the commit 722a98f. That commit hash appears in feat.data_model_change (Background read row), not on the journey board. Cite feat.data_model_change for the hash.",
+    "The feat.design details the output relies on (B1.2 steps, B1.4 cases, B1.5 test names, DD-6, DD-7) match the approved feat.design. But feat.design isn't among this step's contracted inputs or the listed files read. Say how it was read (for example a context_get receipt) so the journey: citations can be traced.",
+    "Section 2's transformation rule for `paid_date` could state the whitespace-only case directly, or point to MQ-4, so DE-08 doesn't have to infer it from the open-questions table."
   ],
   "scores": {
     "correct": 5,
     "complete": 4,
-    "grounded": 5,
+    "grounded": 4,
     "useful": 5
   },
-  "notes": "I checked every statement in feat.mappings.md against feat.data_model_change (DE-05), org.customer_mappings, the brief's tool view (transform.py, ingest.py, dq.py, pipeline.py, schedule.json), data/sample_feed.csv, .git/config (remote ap-pipeline-sample, which supports the file:ap-pipeline-sample/... citations) and shared memory. The earlier refused claim, that CI was run and git status was clean, has been removed. No CI or git result is claimed anywhere. All of these match their sources: the v3 columns, the paid_date -> Invoice.paid_date mapping, the 'empty when unpaid' format, daily 02:00 Asia/Kolkata, the commit IDs 7b68a18 and 3b03f15, the reject reasons, PAID_DATE_REASON, DD-6/DD-7, DMQ-1 to DMQ-5, IN-3/IN-7, the ap_aging overdue_with_risk and ap_forecast vendor_risk consumers, and the validation cases ('2026-13-01', 'not-a-date'). The new open questions MQ-1 to MQ-4 are framed correctly as questions, with interim answers. MQ-2 rightly flags the gap between the contract's 'empty when unpaid' and DD-7. The output meets the workbook action: it updates the mapping from the data model, applies the latest customer mapping and gives ordered transformation steps. Only minor citation and precision points remain."
+  "notes": "I checked every statement against feat.data_model_change, org.customer_mappings, the tool view (transform.py, ingest.py, dq.py, pipeline.py, schedule.json, tests), data/sample_feed.csv, MEMORY.md, the DE skill file and the approved feat.design (B1.2 to B1.5, DC-1, DC-2, DD-6, DD-7).\n\n**What matches the sources:**\n- The column-to-attribute mapping, the strip, Decimal and default rules, the precedence order, the Delay-history derivation (first-seen vendor order, negative delays kept, filter on paid with a paid_date), the schedule comparison and the validation test names all match.\n- The CI claim behind the earlier refusal is gone. Section 7 now says only that this step changed no code, which the tool view confirms (no paid_date in transform.py, no delays.py).\n- The customer contract (v3 columns, paid_date -> Invoice.paid_date, daily 02:00 Asia/Kolkata) is applied correctly. The output points out the gap between 'empty when unpaid' and DD-7 and raises it as MQ-2 instead of resolving it silently.\n\n**Problems:**\n- One mis-cited claim: the DE-07 handover is attributed to record:brief, but only the skill file says it.\n- MQ-4 sets a default for whitespace-only paid_date values. That is a small assumption labelled as an open question.\n\nOverall the output meets the workbook outcome: updated data mappings and transformation steps."
 }

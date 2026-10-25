@@ -1,5 +1,5 @@
 {
   "failures": [
-    "G1 judge found an unsupported statement: \"The CI command `/usr/bin/python3 ci.py` was run on the unchanged `feature/story` checkout in this step and passed, and `git status` showed a clean working tree \" (No source the agent read or cited holds a CI result or git status output for DE-06. The step's tool policy blocks shell for this step: running a command here re)"
+    "G3 numbers ['100.0'] in \"No code was changed in this step. CI passes on the current baseline: 3 tests run, 0 failures, 0 erro\" do not appear in tool:repo"
   ]
 }

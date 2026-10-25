@@ -1,0 +1,22 @@
+{
+  "unsupported": [
+    {
+      "text": "| Production or source-system data read | None: only the inputs, the tool view, repository files and synthetic rows | record:brief |",
+      "why": "The citation does not support the statement. The step brief (record:brief) lists the inputs, the tool view and the allowed commands, but it says nothing about production or source-system data, or about what the agent did or did not read. The claim attests to the agent's own process, and the cited source does not establish it."
+    }
+  ],
+  "improvements": [
+    "Section 3 is headed 'Transformation steps (per feed row, in this order)', but steps 7 (data-quality report) and 8 (delays_by_vendor) are not per-row operations. No source places delays_by_vendor after the DQ report in the run: the output itself says pipeline.run is unchanged, so the pipeline never calls delays_by_vendor. Split the per-row steps from the per-run and downstream derivations, or retitle the section.",
+    "MQ-4 (whitespace-only paid_date) gives an interim default: 'Treat as blank (None), the result of stripping before the blank check'. The design's _parse_paid_date docstring (feat.design B1.2) does not say whether the strip happens before the blank check. Under the project rule 'nothing is assumed', this should be a BLOCKING question to the data modeler, or left without an interim default.",
+    "Every 'journey:feat.design' citation checks out against hobasa-design-agent/outputs/FEAT-ZD-48600/feat.design.md (B1.2, B1.4, B1.5 test names, '2026-13-01', DD-6, DD-7). However, feat.design is not among this step's contracted inputs or the listed files read. Record how it was obtained (context_get receipt), or cite the claims through feat.data_model_change where that file already carries them.",
+    "The source-to-target table marks invoice_id as 'Nullable: No', but transform.py accepts an empty string after strip(). Say that an empty id is not rejected today, or add an open question on it.",
+    "The paid row in section 2 could note that a short row (paid cell is None) raises AttributeError in .strip() and is rejected. That is today's behaviour per transform.py, and it matters for v3 short rows."
+  ],
+  "scores": {
+    "correct": 4,
+    "complete": 5,
+    "grounded": 4,
+    "useful": 5
+  },
+  "notes": "I checked the output against both inputs (feat.data_model_change, org.customer_mappings), the tool view, data-engineering-steps/SKILL.md, ap_pipeline/data/sample_feed.csv, the git remote (it confirms that the GitHub repository name ap-pipeline-sample is valid), MEMORY.md and feat.design.md.\n\nThe earlier refusal is fixed. The DE-07/DE-08/DE-09/DE-13 claims now cite SKILL.md, and SKILL.md supports them.\n\nThe following all match their sources:\n- The v3 column list, the paid_date -> Invoice.paid_date mapping and the schedule (daily, 02:00, Asia/Kolkata), checked against org.customer_mappings and schedule.json.\n- The existing transform rules (strip on id and vendor, no strip on due_date, Decimal amount, paid via get/strip/lower, the list of caught exceptions).\n- The paid_date rules, precedence (DD-6), DD-7, the delays_by_vendor rules and the B1.5 test names.\n- The sample feed being v2-only.\n\nAll numbers trace to sources: commits 3943254, e8afce8 and 722a98f, 02:00, '2026-13-01', and 2 dp.\n\nThe one unsupported item is a self-attestation that cites record:brief, which does not support it. Everything else is grounded. The mapping fully meets the workbook outcome: the data-model mapping is updated, the latest customer contract is applied, and the transformation steps and schedule are confirmed."
+}

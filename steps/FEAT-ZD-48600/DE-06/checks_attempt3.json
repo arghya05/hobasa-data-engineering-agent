@@ -1,0 +1,5 @@
+{
+  "failures": [
+    "G1 judge found an unsupported statement: \"| Production or source-system data read | None: only the inputs, the tool view, repository files and synthetic rows | record:brief |\" (The citation does not support the statement. The step brief (record:brief) lists the inputs, the tool view and the allowed commands, but it says nothing about p)"
+  ]
+}

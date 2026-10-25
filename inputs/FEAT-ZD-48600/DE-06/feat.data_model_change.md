@@ -1,136 +1,150 @@
-<!-- input feat.data_model_change for DE-06: from hobasa-data-engineering-agent/outputs/FEAT-ZD-48600/feat.data_model_change.md at commit 7b68a18, produced by DE-05 -->
+<!-- input feat.data_model_change for DE-06: from hobasa-data-engineering-agent/outputs/FEAT-ZD-48600/feat.data_model_change.md at commit 3943254, produced by DE-05 -->
 # feat.data_model_change: FEAT-ZD-48600
 
-Data Model change for the Data Engineering lane of FEAT-ZD-48600 ("Show which overdue invoices belong to vendors that usually pay late"). This is DE-05, Data Model Changes, attempt 1. The workbook action is "Update the data model based on the source systems and ingested data". There is no gate. Automated checks, the independent judge and sampled human evaluation review this output (record:brief).
+Data Model change for FEAT-ZD-48600 ("Show which overdue invoices belong to vendors that usually pay late"). This is step DE-05, Data Model Changes. The step has no human gate; automated checks, the independent judge and sampled human evaluation review it. The next step, DE-06 Data Mapping, reads this file.
 
 | Field | Value | Source |
 |---|---|---|
 | Trace ID | FEAT-ZD-48600 | record:brief |
-| Step | DE-05 Data Model Changes, attempt 1 | record:brief |
-| Inputs | task.components (e526c4e, from DE-04), org.data_model (3b03f15) | record:brief; mcp:hobasa-context (context_list) |
-| Background read | journey:feat.design (DES-02, revision 722a98f: DC-1, DC-2, B1.2 to B1.4, DD-6, DD-7, NF-2, NF-4) | journey:feat.design; mcp:hobasa-context (context_get) |
-| Code read | ap_pipeline source and tests, from the step's tool view | tool:repo |
-| Source system | Vendor invoice feed (CSV with a header row). It is v2 today; v3 adds the optional `paid_date` column | task.components (IN-1, section 2); org.data_model |
-| **Result** | **The registered Invoice entity already holds `paid_date` (date or None), so no Invoice field is added, removed or retyped.** This step checks each field against the feed and the code. It records the two things the registered model does not yet describe: the reject reason value `paid_date` on the Rejected row, and the derived Delay history structure that `delays_by_vendor` produces. No storage, database or schema migration is involved | org.data_model; task.components (IN-3, IN-7, IN-8, section 7); journey:feat.design (A1, B1.3) |
+| Step | DE-05 Data Model Changes | record:brief |
+| Owner | Data engineer | record:brief |
+| Workbook action | Update the data model based on the source systems and ingested data | record:brief |
+| Contracted inputs | task.components (7cb32bd), org.data_model (e8afce8) | record:brief |
+| Background read | feat.design (722a98f): DC-1, DC-2, B1.2 to B1.4, DD-6, DD-7, NF-4 | journey:feat.design |
+| Other file read | `org/org.data_model.md` (organisation baseline, before the feature override) | file:hobasa-agentic-sdlc/org/org.data_model.md |
+| Code read | `src/ap_pipeline/` (`ingest.py`, `transform.py`, `dq.py`, `pipeline.py`, `schedule.json`, `__init__.py`) from the step's tool view | tool:repo |
 
-## 1. Baseline: the registered model compared with the code today
+## 1. Summary of the change
 
-| Element | Registered model (org.data_model) | Code today (`transform.to_model`) | Gap | Source |
-|---|---|---|---|---|
-| Invoice `id` | str | `r["invoice_id"].strip()` | None | org.data_model; tool:repo (`transform.py`) |
-| Invoice `vendor` | str | `r["vendor"].strip()` | None | org.data_model; tool:repo (`transform.py`) |
-| Invoice `due_date` | date | `date.fromisoformat(r["due_date"])` | None | org.data_model; tool:repo (`transform.py`) |
-| Invoice `amount` | Decimal, 2 dp | `Decimal(r["amount"])` | None | org.data_model; tool:repo (`transform.py`); record:memory (D-2026-044) |
-| Invoice `paid` | bool | `r.get("paid", "false").strip().lower() == "true"` | None | org.data_model; tool:repo (`transform.py`) |
-| Invoice `paid_date` | date or None, "added in feed v3" | **Not produced.** The module docstring lists only `id, vendor, due_date, amount, paid` | Registered but not implemented. IN-3 (TSK-01) adds it in the Data Engineering coding step | org.data_model; tool:repo (`transform.py`); task.components (IN-3) |
-| Rejected row | Not described | `{"row": r, "reason": type(e).__name__}` | `reason` gains the value `paid_date` (section 2.3) | tool:repo (`transform.py`); task.components (IN-3) |
-| Delay history | Not described | Does not exist | New derived structure (section 2.4) | task.components (IN-7); journey:feat.design (DC-2, B1.3) |
+The **Invoice** entity gains one attribute, `paid_date (date or None)`, sourced from a new column `paid_date` that vendor feed v3 adds. Every other attribute stays as it is. Feed v2, which has no `paid_date` column, must keep loading (org.data_model; task.components section 2; journey:feat.design NF-4).
 
-Package version today: `0.4.0` (tool:repo, `__init__.py`; task.components EX-7).
+Two further, smaller changes follow from it. Neither is a new stored entity:
 
-## 2. Data model changes
+- The data-quality reject reasons gain one value, `'paid_date'` (task.components section 3; journey:feat.design B1.3).
+- A derived, in-memory **Delay history** view is added: `{vendor: [delay_days, ...]}` (task.components section 4; journey:feat.design DC-2).
 
-### 2.1 Source contract: vendor invoice feed row (v2 to v3)
+No storage, database table or schema migration is involved (journey:feat.design A1 "Data" row; task.components section 1 "Storage / Databricks: None").
 
-| Column | v2 | v3 | Type in the feed | Rule | Source |
-|---|---|---|---|---|---|
-| `invoice_id`, `vendor`, `due_date`, `amount`, `paid` | Present | Present, unchanged | str (CSV text) | Unchanged | task.components (section 2) |
-| `paid_date` | Absent | **Added, optional** | ISO date string, or empty when unpaid | The key is missing in a v2 row and is `None` in a short v3 row. Ingestion needs no code change because `parse_feed` keys rows by header text | task.components (section 2, IN-2); journey:feat.design (B1.3 "Feed row") |
+## 2. Source system and ingested data (as read)
 
-### 2.2 Entity Invoice (DC-1): no field beyond the registered model
-
-| Field | Type | Nullable | Derived from the feed row | Change | Source |
-|---|---|---|---|---|---|
-| `id` | str | No | `invoice_id`, stripped | None | org.data_model; tool:repo |
-| `vendor` | str | No | `vendor`, stripped | None | org.data_model; tool:repo |
-| `due_date` | date | No | ISO date; no `strip()` is added | None | org.data_model; task.components (rules carried for coding) |
-| `amount` | Decimal, 2 dp | No | `Decimal(...)`, never float | None | org.data_model; record:memory (D-2026-044, L-011) |
-| `paid` | bool | No | `paid` text equals `true` (any case); missing means false | None | org.data_model; tool:repo |
-| `paid_date` | date | **Yes (None)** | `None` when the value is missing, `None`, blank or whitespace only. Otherwise `date.fromisoformat(value.strip())`. A non-blank invalid value rejects the row | **Implemented with IN-3** (already registered) | org.data_model; task.components (IN-3); journey:feat.design (B1.2 `_parse_paid_date`, B1.4) |
-
-Rules for the record:
-
-- The record stays a plain `dict`, not a class. Every existing key keeps its name and type. `paid_date` is present on **every** accepted record, and is `None` for feed v2 rows (journey:feat.design DC-1, B1.5 `test_feed_v2_without_paid_date_column`; task.components rules carried for coding).
-- `paid_date` is validated only after the existing field checks pass, so an existing reject reason wins over `paid_date` (journey:feat.design DD-6, pending TQ-10; task.components IN-3, R-I2).
-- An unpaid record may carry a valid `paid_date`, and the date is kept. This is an interim rule pending OQ-B6 (journey:feat.design DD-7; task.components CQ-I3).
-- A paid record may have `paid_date = None`. It is kept, not rejected, and left out of the Delay history (journey:feat.design B1.4).
-- No rule requires `paid_date` to be on or after `due_date`. An earlier date gives a negative delay, which is kept (journey:feat.design DC-2; task.components IN-7).
-
-### 2.3 Rejected row: new reason value
-
-| Field | Type | Change | Source |
+| Item | Today | After this feature | Source |
 |---|---|---|---|
-| `row` | dict (the feed row) | None | tool:repo (`transform.py`); journey:feat.design (B1.3) |
-| `reason` | str | **New value `paid_date`** (constant `PAID_DATE_REASON`), alongside today's exception type names (`KeyError`, `ValueError`, `InvalidOperation`, `AttributeError`) | task.components (IN-3); tool:repo (`transform.py`) |
+| Source system | Vendor invoice feed: CSV text with a header row | Same source; feed v2 → v3 adds column `paid_date`. No new source, connection or feed | task.components (sections 1, 2) |
+| Feed v2 header (sample) | `invoice_id,vendor,due_date,amount,paid` | Still accepted | task.components (section 1) |
+| Feed v3 header | — | v2 columns plus `paid_date` | task.components (section 2); org.data_model |
+| `paid_date` value in the feed | — | ISO date; empty when unpaid | record:memory (JOURNEY requirement: "optional paid_date column (ISO date, empty when unpaid)") |
+| Ingestion (`ingest.parse_feed`) | `csv.DictReader`; one `dict` of strings per row, keyed by the header | No change: a v3 header carries `paid_date` into each row; a v2 header has no `paid_date` key | tool:repo (`ingest.py`); task.components (section 3) |
+| Mapping to the model (`transform.to_model`) | Builds `id`, `vendor`, `due_date`, `amount`, `paid` | Adds `paid_date` (implemented in DE-08, TSK-01) | tool:repo (`transform.py`); task.components (section 4, row 1) |
 
-The data-quality report needs no change. `reject_reasons` is the sorted set of every rejected row's `reason`, so `paid_date` appears in it automatically (task.components IN-4; tool:repo `dq.py`).
+## 3. Data model: before and after
 
-### 2.4 New derived structure: Delay history (DC-2)
+### 3.1 Invoice entity
 
-| Attribute | Definition | Source |
+| Attribute | Type | Before | After | Change | Source |
+|---|---|---|---|---|---|
+| `id` | str | Yes | Yes | None | org.data_model |
+| `vendor` | str | Yes | Yes | None (see open question DMQ-1 on "optional") | org.data_model; file:hobasa-agentic-sdlc/org/org.data_model.md |
+| `due_date` | date | Yes | Yes | None | org.data_model |
+| `amount` | Decimal, 2 dp | Yes | Yes | None. Decimal, never float | org.data_model; record:memory (D-2026-044, L-011) |
+| `paid` | bool | Yes | Yes | None | org.data_model |
+| **`paid_date`** | **date or None** | No | **Yes** | **Added** (feed v3) | org.data_model; journey:feat.design (DC-1) |
+
+Updated model line, as the feature override states it:
+
+> Invoice: id (str), vendor (str), due_date (date), amount (Decimal, 2 dp), paid (bool), paid_date (date or None) [paid_date added in feed v3].
+
+(org.data_model)
+
+### 3.2 Attribute specification: `paid_date`
+
+| Property | Value | Source |
 |---|---|---|
-| Producer | `delays.delays_by_vendor(records)`, in a new pure module with no I/O | task.components (IN-7); journey:feat.design (B1.2) |
-| Shape | `Dict[str, List[int]]`. The key is the Invoice `vendor`; the value is that vendor's list of `delay_days` | task.components (IN-7); journey:feat.design (DC-2, B1.3) |
-| `delay_days` | `(paid_date - due_date).days`, in calendar days, as an int that may be negative | task.components (IN-7); journey:feat.design (NF-2, DC-2); record:memory (D-2026-031) |
-| Membership | Only records where `paid` is truthy **and** `paid_date` is not `None`. A vendor with no such record has no key | journey:feat.design (B1.2, B1.5) |
-| Order | Values in feed order; vendors in first-seen order | task.components (IN-7); journey:feat.design (B1.2) |
-| Input not modified | The record list is not changed | task.components (IN-7); journey:feat.design (B1.2) |
-| Persistence | None: in memory only, with no storage, database or schema migration | task.components (IN-8); journey:feat.design (A1) |
-| Consumer | ap_forecast: one vendor's list is the `history` argument of `vendor_risk` | journey:feat.design (DC-2) |
+| Name in the model and in the feed | `paid_date` | org.data_model; task.components (section 2; CQ-DE4-4) |
+| Type | Python `datetime.date`, or `None` | org.data_model; journey:feat.design (B1.3) |
+| Nullable | Yes. `None` when the feed column is missing (feed v2), the cell is `None` (short row) or the cell is blank | journey:feat.design (B1.3, B1.4) |
+| Format in the feed | ISO date, parsed with `date.fromisoformat` after stripping whitespace | journey:feat.design (B1.2); record:memory (JOURNEY requirement) |
+| Invalid value | A non-blank value that is not an ISO date rejects the row with reason `'paid_date'` | journey:feat.design (B1.2, B1.4); task.components (section 4, row 1) |
+| Precedence | Validated only after the existing fields pass; an invalid existing field keeps today's reason (exception type name) | journey:feat.design (DD-6) |
+| Relation to `paid` | Not cross-validated. A paid record without `paid_date` is kept; an unpaid row with a valid `paid_date` is accepted and keeps the date (interim, pending OQ-B6) | journey:feat.design (DD-7, B1.4) |
+| Present on every record | Yes: every accepted record carries the `paid_date` key (a `date` or `None`) | task.components (section 4, row 1); journey:feat.design (B1.2 step 3) |
 
-### 2.5 Knowledge-graph relations added for this feature (ap_pipeline side)
+### 3.3 Rejected row and data-quality report
 
-| From | Relation | To | Via | Source |
-|---|---|---|---|---|
-| Feed row (v3) | maps to | Invoice (with `paid_date`) | `transform.to_model` | task.components (IN-3) |
-| Feed row (v3) | rejected as | Rejected row (`reason = paid_date`) | `transform.to_model` | task.components (IN-3) |
-| Rejected row | summarised in | Data-quality report `reject_reasons` | `dq.quality_report` (unchanged) | task.components (IN-4) |
-| Invoice | aggregated by `vendor` into | Delay history | `delays.delays_by_vendor` | task.components (IN-7); journey:feat.design (DC-2) |
-| Delay history | consumed by | ap_forecast `vendor_risk` | DC-2 | journey:feat.design (A2, DC-2) |
-| Invoice | consumed by | ap_aging `overdue_with_risk`, which reads `id`, `vendor`, `due_date`, `amount` and `paid`, and ignores `paid_date` | DC-1 | journey:feat.design (DC-1, B3.3) |
-
-## 3. Compatibility
-
-| Check | Result | Source |
+| Structure | Change | Source |
 |---|---|---|
-| Feed v2 (no `paid_date` column) still loads | Yes. Every record gets `paid_date = None` | task.components (section 2, R-I1); journey:feat.design (NF-4) |
-| Existing keys, types and return shapes | Unchanged. The `to_model` signature and the `(records, rejected)` shape are kept | task.components (IN-3, rules carried for coding); journey:feat.design (NF-4) |
-| Downstream consumer of Invoice (ap_aging) | Unaffected; it ignores the extra `paid_date` key | journey:feat.design (B3.3) |
-| Monetary type | `amount` stays `Decimal` | record:memory (D-2026-044, L-011) |
-| Schedule and pipeline orchestration | Unchanged: `pipeline.run` and `schedule.json` | task.components (IN-5, IN-6) |
+| Rejected row `{"row": dict, "reason": str}` | Shape unchanged; one new `reason` value, `"paid_date"` | journey:feat.design (B1.3); task.components (section 4, row 1) |
+| `quality_report` → `reject_reasons` | No code change; `'paid_date'` appears in the sorted set when such a row is rejected | task.components (section 3, `dq.quality_report`); tool:repo (`dq.py`) |
 
-## 4. Schema validation rules (for DE-09 Unit Test Cases)
+### 3.4 Derived view: Delay history (not stored)
 
-| Rule | Expected | Source |
+| Property | Value | Source |
 |---|---|---|
-| The keys of every accepted record are exactly `id`, `vendor`, `due_date`, `amount`, `paid`, `paid_date` | Pass | org.data_model; journey:feat.design (DC-1) |
-| `paid_date` is a `date` or `None` | Pass | org.data_model |
-| Blank or missing `paid_date` | `None`; the row is accepted | journey:feat.design (B1.4) |
-| Non-blank invalid `paid_date` (`"2026-13-01"` or `"not-a-date"`) on an otherwise valid row | Rejected with reason `paid_date`, which `reject_reasons` lists | task.components (rules carried for coding); journey:feat.design (B1.4, B1.5) |
-| Bad `due_date` and bad `paid_date` together | Reason `ValueError` | journey:feat.design (B1.4, B1.5, DD-6) |
-| Unpaid row with a valid `paid_date` | Accepted; the date is kept | journey:feat.design (DD-7, B1.5) |
-| Delay history | Values are `int`. Keys are only vendors with at least one paid record that has a `paid_date` | journey:feat.design (DC-2, B1.5) |
-| `amount` | `Decimal`, never `float` | record:memory (D-2026-044) |
+| Shape | `Dict[str, List[int]]`, `{vendor: [delay_days, ...]}` | journey:feat.design (DC-2, B1.3) |
+| Rule | `delay_days = (paid_date - due_date).days`, calendar days | task.components (section 4, row 2); record:memory (D-2026-031) |
+| Included records | Paid records with a `paid_date` only | task.components (section 4, row 2); journey:feat.design (DC-2) |
+| Order | Feed order within a vendor; vendors in first-seen order | task.components (section 4, row 2) |
+| Negative delays (early payment) | Kept | task.components (section 4, row 2); journey:feat.design (DC-2) |
+| Produced by | `delays.delays_by_vendor(records)` (new module, TSK-02) | task.components (section 4, row 2) |
+| Consumer | ap_forecast `vendor_risk(history)`, one vendor's list at a time | journey:feat.design (DC-2) |
 
-## 5. Code in this step
+### 3.5 Knowledge-graph view
 
-This step changes the data model only and changes no code. The tool view shows `transform.py` without `paid_date`, and there is no `delays.py` module yet (tool:repo). IN-3 and IN-7 implement the model change in DE-08 Coding, within the file budget in task.components section 4. The CI command `/usr/bin/python3 ci.py` was run on the unchanged `feature/story` checkout in this step and passed, and `git status` showed a clean working tree (record:brief for the command; result from this step's CI run). Agent judgement: the `transform.py` module docstring lists the model fields, so it should gain `paid_date` with IN-3 (tool:repo `transform.py`).
+```mermaid
+flowchart LR
+  F["Vendor invoice feed v2 / v3 (CSV)"] -- "column paid_date (v3 only)" --> I["Invoice<br/>id, vendor, due_date, amount, paid,<br/><b>paid_date (NEW)</b>"]
+  F -- "invalid paid_date" --> R["Rejected row<br/>reason 'paid_date' (NEW value)"]
+  R --> Q["Data-quality report<br/>reject_reasons"]
+  I -- "paid and paid_date set" --> D["Delay history (derived, NEW)<br/>{vendor: [delay_days]}"]
+  D --> V["ap_forecast vendor_risk"]
+  I -- "DC-1 records" --> A["ap_aging overdue_with_risk<br/>(ignores paid_date)"]
+```
 
-## 6. Open questions (non-blocking)
+Sources: task.components (section 4 diagram); journey:feat.design (A2, DC-1, DC-2, B3.3).
 
-| ID | Question | Interim answer | Owner (proposed) |
+## 4. Compatibility
+
+| Consumer / case | Effect | Source |
+|---|---|---|
+| Feed v2 (no `paid_date` column) | Loads as today; every record has `paid_date = None` | journey:feat.design (NF-4, B1.4); task.components (section 2) |
+| Existing record keys | Unchanged; `paid_date` is additive | journey:feat.design (DC-1) |
+| `to_model` signature and `(records, rejected)` return shape | Unchanged | task.components (section 4, row 1) |
+| ap_aging (DC-1 consumer) | Reads `id`, `vendor`, `due_date`, `amount`, `paid`; extra key `paid_date` ignored | journey:feat.design (DC-1, B3.3) |
+| Schedule | Unchanged: daily, 02:00, Asia/Kolkata | tool:repo (`schedule.json`); task.components (section 3) |
+
+## 5. Code in ap_pipeline
+
+This step changes no code. The model change is implemented by TSK-01 in DE-08 (`transform.to_model` with `_parse_paid_date` and `PAID_DATE_REASON`) and TSK-02 (`delays.delays_by_vendor`), as task.components section 4 plans. At that point the `transform.py` module docstring, which lists the model as "(id, vendor, due_date, amount, paid)", should also name `paid_date` (tool:repo `transform.py`; task.components section 4).
+
+Current behaviour that the new attribute builds on (tool:repo `transform.py`):
+
+- A missing `invoice_id`, `vendor`, `due_date` or `amount` key raises `KeyError`, and the row is rejected.
+- `paid` is read with `r.get("paid", "false")`, so a missing `paid` column means unpaid.
+- `amount` is `Decimal(r["amount"])`, with no check on the number of decimals.
+
+`pipeline.run` calls `to_model` on the output of `parse_feed` and passes its result to `quality_report` (tool:repo `pipeline.py`). The repository is on `feature/story` at `3fcbe1b` (task.components).
+
+## 6. Handover to DE-06 (Data Mapping)
+
+| Source column (feed) | Model attribute | Rule |
+|---|---|---|
+| `invoice_id` | `id` | Unchanged (strip) |
+| `vendor` | `vendor` | Unchanged (strip) |
+| `due_date` | `due_date` | Unchanged (ISO date) |
+| `amount` | `amount` | Unchanged (Decimal) |
+| `paid` | `paid` | Unchanged (`"true"`, case-insensitive, after strip; missing → false) |
+| `paid_date` (v3, optional) | `paid_date` | **New**: missing, `None` or blank → `None`; ISO date → `date`; otherwise reject with reason `'paid_date'`, after the existing checks pass |
+
+Sources: tool:repo (`transform.py`); journey:feat.design (B1.2, B1.4); org.data_model.
+
+## 7. Open questions (non-blocking)
+
+| ID | Question | Interim position | Owner (proposed) |
 |---|---|---|---|
-| DMQ-1 | Should the registered org.data_model be extended with the Rejected row `reason` value `paid_date` and the Delay history structure (sections 2.3 and 2.4)? Today it describes only the Invoice entity | Treat this document as the feature-level model change. Data modelers decide whether to register these items org-wide | Data engineering lead; data modelers |
-| DMQ-2 | Carried CQ-I1: is the feed v3 column spelled exactly `paid_date`? | Assume `paid_date`, as in org.data_model | Data engineering lead / feed owner |
-| DMQ-3 | Carried CQ-I3 / OQ-B6 (DD-7): should an unpaid record keep a valid `paid_date`? | Yes; the Delay history ignores it | Product / Architect |
-| DMQ-4 | Carried DQ-4: should `delays_by_vendor` be re-exported from `ap_pipeline/__init__.py`? | No. It is imported as `ap_pipeline.delays.delays_by_vendor` | Architect |
-| DMQ-5 | Carried TQ-10 (DD-6): does an existing reject reason win over `paid_date`? | Yes | Architect |
+| DMQ-1 | The organisation baseline says `vendor (str, optional)`, but the feature override says `vendor (str)`. Today's code rejects a row with no `vendor` column (`KeyError`), and ap_aging raises `KeyError` for a missing `vendor` (DD-8). Which definition is authoritative after this feature? | Follow the feature override (the contracted input). This feature does not change `vendor` | Data modeler |
+| DMQ-2 | Who updates `org/org.data_model.md` with `paid_date` once the feature is released, and when? The override sits only under `features/FEAT-ZD-48600/org-overrides/` | Treat the feature override as the model for this feature | Data engineering lead |
+| DMQ-3 | The model says `amount (Decimal, 2 dp)`, but `to_model` does not enforce 2 dp. This gap exists today and this feature does not add to it; ap_aging quantises downstream (DD-10) | No change in this feature | Data modeler |
+| CQ-DE4-1 (carried) | When does feed v3 reach production? ZD-48470 brings feed v2 | Build and test on synthetic v3 rows; v2 keeps loading | Product manager / Data engineering lead |
+| CQ-DE4-4 (carried) | No feed v3 specification is in the inputs; the column name `paid_date` comes from the data model and the design | Use `paid_date` | Data modeler |
+| OQ-B6 (carried) | Should an unpaid row with a valid `paid_date` be accepted? | Accepted, date kept (DD-7) | Product manager |
 
-## 7. Validation check
-
-| Check | Result | Source |
-|---|---|---|
-| Data model updated from the source system and the ingested data | Pass: feed v3 contract (2.1), Invoice (2.2), Rejected row (2.3), Delay history (2.4) and relations (2.5) | task.components; org.data_model |
-| Conflict with the registered model or an approved output | None. `paid_date` matches org.data_model and DC-1, and the additions are new structures, not changes | org.data_model; journey:feat.design; task.components (section 9) |
-| Production or source-system data read | None. Only the inputs, the tool view and synthetic test rules were used | record:brief |
-| Blocking questions | None | n/a |
+No blocking questions.

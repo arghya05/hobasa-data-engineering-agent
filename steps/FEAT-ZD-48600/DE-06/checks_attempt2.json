@@ -1,3 +1,5 @@
 {
-  "failures": []
+  "failures": [
+    "G1 judge found an unsupported statement: \"The next step, DE-07, reads this file together with task.components (record:brief).\" (The citation doesn't support the claim. The step brief (record:brief) never mentions DE-07 or what it reads. The claim is true, but only the data-engineering-st)"
+  ]
 }

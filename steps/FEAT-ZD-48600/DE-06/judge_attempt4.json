@@ -1,0 +1,18 @@
+{
+  "unsupported": [],
+  "improvements": [
+    "Citation format: many rows cite `journey:feat.design`, but neither the brief nor the grounded-output skill lists `journey:` as a valid citation. feat.design was read from disk, so the documented form is `file:hobasa-design-agent/outputs/FEAT-ZD-48600/feat.design.md`. Every cited section (B1.1, B1.2, B1.4, B1.5, HC-3, DC-1, DC-2, DD-6, DD-7, NF-10, SE-4) does support its statement.",
+    "MQ-4 (whether a `paid_date` cell holding only whitespace counts as blank or invalid) is marked non-blocking, yet the output itself says DE-08 must not pick a behaviour silently. The SDLC CLAUDE.md says anything unclear becomes a BLOCKING question to its owner. The gate should decide whether MQ-4 should be BLOCKING to the Data modeler instead of sitting under 'No blocking questions'.",
+    "MQ-2 sets the customer contract ('empty when unpaid') against DD-7 (an unpaid row with a valid paid_date is accepted). Calling it a 'wording difference' that the mapping overrides in favour of the Data Model change is a judgement call. The owner of the customer contract should confirm it, or it should be raised as BLOCKING, because the contract is the customer input this step is meant to apply.",
+    "The 'feed owner' named as an owner in MQ-2 is not a role in any source. Name an owner from the sources, or mark this one as still to be identified.",
+    "The section 2 mapping table leaves out some reject paths the code has today: a missing `due_date` column raises KeyError, an invalid `amount` raises InvalidOperation, and a missing `amount` raises KeyError. Listing them would make the mapping a complete reference for DE-08 and DE-09.",
+    "Section 1 says the column lists agree on 'same names and order'. The Data Model change only says 'v2 columns plus paid_date', and csv.DictReader keys rows by header name, so column order does not matter. Either drop the order claim or say that order does not matter."
+  ],
+  "scores": {
+    "correct": 5,
+    "complete": 4,
+    "grounded": 5,
+    "useful": 5
+  },
+  "notes": "I checked each statement against both inputs (feat.data_model_change and org.customer_mappings), the brief and its tool view (transform.py, ingest.py, dq.py, pipeline.py, schedule.json, test_pipeline.py), feat.design (B1.1\u2013B1.5, HC-3, DC-1, DC-2, DD-6, DD-7, NF-10, SE-4), the data-engineering-steps SKILL.md (DE-07, DE-08 and DE-13 read feat.mappings or org.customer_mappings; DE-09 writes the unit tests), ap_pipeline/data/sample_feed.csv (v2 header confirmed) and MEMORY.md (D-2026-031, D-2026-044, L-011).\n\nThe row the earlier refusal flagged ('Production or source-system data read') is gone.\n\nThe code behaviour claims match transform.py:\n- `due_date` is not stripped.\n- A `None` paid cell raises AttributeError, which rejects the row.\n- `paid` uses a case-insensitive comparison with 'true'.\n\nThe schedule (daily, 02:00, Asia/Kolkata) matches both the contract and schedule.json. The paid_date rules and their order, the PAID_DATE_REASON and _parse_paid_date names, the Delay history rules and the test names all match feat.design B1.2 and B1.5. The commit IDs (3943254, e8afce8, 722a98f) appear in the brief, in the data_model_change input and in feat.clarifications.\n\nThe repository name 'ap-pipeline-sample' is the citation convention other approved outputs use.\n\nI found no invented facts, contradictions or unsupported numbers. The remaining points concern citation format and whether MQ-2 and MQ-4 should be blocking, and they are listed as improvements."
+}
