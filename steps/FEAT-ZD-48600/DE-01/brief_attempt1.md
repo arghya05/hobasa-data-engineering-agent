@@ -8,7 +8,7 @@
 
 ## Inputs (GitHub checkout; read them with Read, or context_get for a receipt)
 - feat.tasks (Engineering tasks with goal, AC, dependencies and size budget): `hobasa-data-engineering-agent/inputs/FEAT-ZD-48600/DE-01/feat.tasks.md` (from hobasa-design-agent/outputs/FEAT-ZD-48600/feat.tasks.md at commit b0fd4d2)
-- org.engineering_stack (Repositories, languages, versions and exact commands): `hobasa-data-engineering-agent/inputs/FEAT-ZD-48600/DE-01/org.engineering_stack.md` (from hobasa-agentic-sdlc/org/org.engineering_stack.md at commit a6b3e2a)
+- org.engineering_stack (Repositories, languages, versions and exact commands): `hobasa-data-engineering-agent/inputs/FEAT-ZD-48600/DE-01/org.engineering_stack.md` (from hobasa-agentic-sdlc/org/org.engineering_stack.md at commit 3b03f15)
 
 ## Outputs (write each file in full; the spine commits and pushes after evaluation and approval)
 - task.repo_access (Repository (and Databricks) availability and write access): write `hobasa-data-engineering-agent/outputs/FEAT-ZD-48600/task.repo_access.md`
