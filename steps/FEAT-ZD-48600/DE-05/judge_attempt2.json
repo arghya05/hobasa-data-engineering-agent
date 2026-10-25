@@ -1,0 +1,16 @@
+{
+  "unsupported": [],
+  "improvements": [
+    "The brief says to run `/usr/bin/python3 ci.py` until it passes. The output says no code was changed, which matches the checkout: `src/ap_pipeline/` has no `paid_date` and no `delays.py`. It does not say outright that CI was not run in this step. One cited line saying so (record:brief; tool:repo) would answer the question that led to the attempt-1 refusal.",
+    "Section 2.4 cites record:memory D-2026-031 for `delay_days` being calendar days. D-2026-031 is about aging buckets. The calendar-day rule for `delay_days` comes from feat.design NF-2, so cite that as the main source and give D-2026-031 only as background.",
+    "DMQ-A (whether to register the Rejected-row reason and the Delay history structure org-wide) has no follow-up step. Name the step or person who would update org.data_model, so the gap is not left open for the DE coding step.",
+    "Section 4 lists the schema validation rules but does not map them to the planned test names in feat.design B1.5 (for example `test_invalid_paid_date_rejected`, `test_existing_reason_wins`). Adding the mapping would let the later unit-test step use it directly."
+  ],
+  "scores": {
+    "correct": 5,
+    "complete": 4,
+    "grounded": 5,
+    "useful": 4
+  },
+  "notes": "Attempt 2 removes the unsupported CI claim (`tool:ci`, 3 tests, coverage 100.0) that got attempt 1 refused, and adds no new run, count or coverage figure. I checked every statement against the inputs and the other sources:\n- org.data_model: the Invoice fields, including `paid_date` (date or None, added in feed v3).\n- task.components: IN-1 to IN-6, TC-1, TC-2, the rules carried for coding, and sections 3 and 5.\n- feat.design: DC-1, DC-2, B1.2 to B1.5, DD-6 and DD-7 (both still marked pending), NF-2, NF-4, B3.3 and DQ-4.\n- tool:repo: the `transform.py` docstring and code, `dq.py`, the test header and version 0.4.0.\n- record:memory: D-2026-044 and L-011.\n- The journey board: DES-02 approved by the Architect and UX lead.\n\nAll of them support the output. The statement that the step changed no code matches the checkout: Glob and Grep show `src/ap_pipeline/` has no `paid_date` and no `delays.py`. The output does what the workbook asks. It sets out the v2 to v3 source contract, confirms each Invoice field, adds the `paid_date` reject reason and the derived Delay history structure, lists the new knowledge-graph relations, and covers compatibility and schema validation rules. Its open questions correctly point back to CQ-I1, OQ-B6 and DQ-4. I found no hallucinations."
+}

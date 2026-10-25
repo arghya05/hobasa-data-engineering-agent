@@ -1,0 +1,21 @@
+{
+  "unsupported": [
+    {
+      "text": "CI on the unchanged `feature/story` branch passed (`/usr/bin/python3 ci.py`: 3 tests run, 0 failures, coverage 100.0) (tool:ci).",
+      "why": "The brief supplies no `tool:ci` view; its only tool view is tool:repo. No input, tool view or file the agent read reports a CI run, a failure count or a coverage figure, so \"coverage 100.0\" and \"0 failures\" appear in no source. The \"3 tests\" count matches the three test methods in tests/test_pipeline.py, but nothing shows that a run happened. This DE-05 session also blocks shell commands under hook G9 (\"step DE-05 may run only no shell commands\"), so the claimed run cannot be checked against any tool view. Remove the claim, or cite an actual CI tool view."
+    }
+  ],
+  "improvements": [
+    "Section 1 shows no gap for Invoice `amount`, but the registered model says \"Decimal, 2 dp\" and `transform.to_model` only does `Decimal(r[\"amount\"])` with no quantise or 2-dp check. Note that 2 dp is assumed from the feed, not enforced. feat.design DD-10 and DQ-2 already discuss this for malformed feeds.",
+    "The workbook outcome is \"Updated data model\", but the registered org.data_model was not updated or proposed as a diff. Only feature-level additions were documented, with registration left open as DMQ-A. Consider adding the exact text that should be added to org.data_model (the Rejected row reason `paid_date` and the Delay history entity) so the data modellers can adopt it directly.",
+    "In section 2.5, the row 'Delay history consumed by ap_forecast vendor_risk' could also say that the caller builds `risk_by_vendor` from it (feat.design DC-3, B5). The Delay history does not flow into ap_forecast on its own.",
+    "Section 2.2's rule 'No rule requires paid_date to be on or after due_date' is an inference from DC-2 ('negative values kept'). Mark it as derived, or list it as an item to verify with the feed owner."
+  ],
+  "scores": {
+    "correct": 4,
+    "complete": 4,
+    "grounded": 4,
+    "useful": 4
+  },
+  "notes": "I checked the output statement by statement against task.components, org.data_model, feat.design (DES-02), the shared memory and journey board file, the tool:repo code and the brief. Every field definition, type, nullability rule, reject-reason value, Delay history attribute, compatibility statement and open question traces to a cited source:\n- DC-1, DC-2, B1.2 to B1.5, DD-6 and DD-7 (both pending), NF-2, NF-4, A1, B3.3 and DQ-4 in feat.design;\n- TC-1, TC-2, IN-1 and IN-4 in task.components;\n- the Invoice line in org.data_model;\n- transform.py, dq.py and `__version__` 0.4.0 in tool:repo.\n\nThe only hallucination is the CI result in section 5: 'coverage 100.0', '0 failures' and the run itself rest on a `tool:ci` view that this step never provided. Without that sentence, the document is a sound feature-level data-model change for DE-05. It is grounded, compatible with feed v2, and keeps the Decimal and calendar-day decisions."
+}
