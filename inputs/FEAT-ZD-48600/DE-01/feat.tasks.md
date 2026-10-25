@@ -1,4 +1,4 @@
-<!-- input feat.tasks for DE-01: from hobasa-design-agent/outputs/FEAT-ZD-48600/feat.tasks.md at commit b0fd4d2, produced by DES-04 -->
+<!-- input feat.tasks for DE-01: from final_document/e2e-run/runs/run-20261025-123936-feat-zd-48600/workspace/agents/hobasa-design-agent/outputs/FEAT-ZD-48600/feat.tasks.md at commit b0fd4d2, produced by DES-04 -->
 # feat.tasks: FEAT-ZD-48600
 
 Engineering tasks for FEAT-ZD-48600 (ZD-48600, "Show which overdue invoices belong to vendors that usually pay late"). This is DES-04 Task Creation (attempt 1), a draft for the Developer gate.

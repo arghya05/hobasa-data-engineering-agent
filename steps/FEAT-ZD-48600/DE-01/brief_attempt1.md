@@ -7,8 +7,8 @@
 - Gate (who approves this output): no gate: automated checks, the independent judge and sampled human evaluation
 
 ## Inputs (GitHub checkout; read them with Read, or context_get for a receipt)
-- feat.tasks (Engineering tasks with goal, AC, dependencies and size budget): `hobasa-data-engineering-agent/inputs/FEAT-ZD-48600/DE-01/feat.tasks.md` (from hobasa-design-agent/outputs/FEAT-ZD-48600/feat.tasks.md at commit b0fd4d2)
-- org.engineering_stack (Repositories, languages, versions and exact commands): `hobasa-data-engineering-agent/inputs/FEAT-ZD-48600/DE-01/org.engineering_stack.md` (from hobasa-agentic-sdlc/org/org.engineering_stack.md at commit 3b03f15)
+- feat.tasks (Engineering tasks with goal, AC, dependencies and size budget): `hobasa-data-engineering-agent/inputs/FEAT-ZD-48600/DE-01/feat.tasks.md` (from final_document/e2e-run/runs/run-20261025-123936-feat-zd-48600/workspace/agents/hobasa-design-agent/outputs/FEAT-ZD-48600/feat.tasks.md at commit b0fd4d2)
+- org.engineering_stack (Repositories, languages, versions and exact commands): `hobasa-data-engineering-agent/inputs/FEAT-ZD-48600/DE-01/org.engineering_stack.md` (from hobasa-agentic-sdlc/org/org.engineering_stack.md at commit b6a392f)
 
 ## Outputs (write each file in full; the spine commits and pushes after evaluation and approval)
 - task.repo_access (Repository (and Databricks) availability and write access): write `hobasa-data-engineering-agent/outputs/FEAT-ZD-48600/task.repo_access.md`

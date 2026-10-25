@@ -1,6 +1,3 @@
 {
-  "failures": [
-    "G2 claim cites file:ap_pipeline/CLAUDE.md but the agent never read that file in this session",
-    "G2 claim cites file:ap_pipeline/CLAUDE.md but the agent never read that file in this session"
-  ]
+  "failures": []
 }
