@@ -1,3 +1,5 @@
 {
-  "failures": []
+  "failures": [
+    "G1 judge found an unsupported statement: \"| Source modules present | `__init__.py`, `dq.py`, `ingest.py`, `pipeline.py`, `transform.py`, `schedule.json` | tool:repo-access (file listing) |  (and the sam\" (The facts are true; a Glob of the ap_pipeline checkout shows these files. The citation does not support them, though. The tool:repo-access view in the brief has)"
+  ]
 }

@@ -1,56 +1,66 @@
-# DE-01 Checking the coding prerequisites ⁹ (Data Engineering agent)
+# DE-01 · Checking the coding prerequisites ⁹
 
-**Item:** FEAT-ZD-48600 · **status:** done
-**Trigger:** Task creation, or any re-entry trigger ¹  
-**Action:** Check for access to Databricks, repo availability, repo creation and write access for the same  
-**Outcome expected:** Databricks and Repo is available with write access
+**Agent:** Data Engineering · **Item:** FEAT-ZD-48600 · **Status:** ✅ done
+**Approved by:** Data engineer: approve by sim.data_engineer
 
-## Inputs (what the agent was given)
+**What this step does:** Check for access to Databricks, repo availability, repo creation and write access for the same
 
-| Item | Prepared input (this repository) | Read from (producer in GitHub) | Commit | Produced by |
+**Expected outcome:** Databricks and Repo is available with write access
+
+**Started by:** Task creation, or any re-entry trigger ¹
+
+## Input: what the agent received
+
+| # | Input | What it is | Produced by | Open |
 |---|---|---|---|---|
-| feat.tasks | hobasa-data-engineering-agent/inputs/FEAT-ZD-48600/DE-01/feat.tasks.md | final_document/e2e-run/runs/run-20261025-123936-feat-zd-48600/workspace/agents/hobasa-design-agent/outputs/FEAT-ZD-48600/feat.tasks.md | b0fd4d2 | DES-04 |
-| org.engineering_stack | hobasa-data-engineering-agent/inputs/FEAT-ZD-48600/DE-01/org.engineering_stack.md | hobasa-agentic-sdlc/org/org.engineering_stack.md | b6a392f | source |
+| 1 | `feat.tasks` | Engineering tasks with goal, AC, dependencies and size budget | Design agent · DES-04 | [input copy](https://github.com/arghya05/hobasa-data-engineering-agent/blob/main/inputs/FEAT-ZD-48600/DE-01/feat.tasks.md) · [original](https://github.com/arghya05/hobasa-design-agent/blob/main/outputs/FEAT-ZD-48600/feat.tasks.md) · [HTML](https://htmlpreview.github.io/?https://raw.githubusercontent.com/arghya05/hobasa-design-agent/main/docs/FEAT-ZD-48600/DES-04_feat-tasks.html) · [PDF](https://github.com/arghya05/hobasa-design-agent/blob/main/docs/FEAT-ZD-48600/DES-04_feat-tasks.pdf) |
+| 2 | `org.engineering_stack` | Repositories, languages, versions and exact commands | organisation source | [input copy](https://github.com/arghya05/hobasa-data-engineering-agent/blob/main/inputs/FEAT-ZD-48600/DE-01/org.engineering_stack.md) · [original](https://github.com/arghya05/hobasa-agentic-sdlc/blob/main/org/org.engineering_stack.md) |
 
-Full brief per attempt: `brief_attempt<N>.md` (trigger event, owner answers, tool view, refusal reasons).
+The full brief the agent was given, attempt by attempt: `brief_attempt<N>.md` in this folder.
 
-## Outputs (what the agent produced)
+## Output: what the agent produced
 
-| Item | GitHub file |
-|---|---|
-| task.repo_access | hobasa-data-engineering-agent/outputs/FEAT-ZD-48600/task.repo_access.md |
+| # | Output | What it is | Open |
+|---|---|---|---|
+| 1 | `task.repo_access` | Repository (and Databricks) availability and write access | [Markdown](https://github.com/arghya05/hobasa-data-engineering-agent/blob/main/outputs/FEAT-ZD-48600/task.repo_access.md) · [HTML](https://htmlpreview.github.io/?https://raw.githubusercontent.com/arghya05/hobasa-data-engineering-agent/main/docs/FEAT-ZD-48600/DE-01_task-repo_access.html) · [PDF](https://github.com/arghya05/hobasa-data-engineering-agent/blob/main/docs/FEAT-ZD-48600/DE-01_task-repo_access.pdf) |
 
-## Code
-
-Repository `ap-pipeline-sample`, branch `feature/story`, commit `3fcbe1b`
+**Code:** repository [ap-pipeline-sample](https://github.com/arghya05/ap-pipeline-sample) · branch [feature/story](https://github.com/arghya05/ap-pipeline-sample/tree/feature/story) · commit [3fcbe1b](https://github.com/arghya05/ap-pipeline-sample/commit/3fcbe1b)
 
 ```
 no file changes in this step
 ```
 
+## Checks and approval
+
+| Attempt | Session | Problems found by the checks | Unsupported statements (judge) | Judge scores |
+|---|---|---|---|---|
+| 1 | new | 1 | 1 | {'correct': 5, 'complete': 4, 'grounded': 4, 'useful': 4} |
+| 2 | continued | 0 | 0 | {'correct': 5, 'complete': 4, 'grounded': 5, 'useful': 4} |
+
+Improvements the independent judge suggests (non-blocking):
+
+- Write access and the clean working tree rest only on tool:repo-access and the spine's tool result. Nothing in the checkout confirms them, because `.git/config` has no upstream for `feature/story`. RA-1 says this, but the outcome line could say directly that remote push access to origin has not been tested yet and will only be tested when the spine first pushes.
+- The branch is named literally `feature/story`, while the convention in org.engineering_stack and ap_pipeline/CLAUDE.md is a 'feature branch per story' (`feature/<story>`). Row 24 still marks the branch model as 'Matches the convention'. That conflicts a little with RAQ-1. The row could say 'partially matches; per-story naming is pending RAQ-1'.
+- RAQ-2 names DE-08/DE-09 as the steps where `coverage` will be confirmed. That is consistent with the step list in the data-engineering skill (DE-08 Coding, DE-09 Unit Test Cases). Citing that skill file would make the reference traceable.
+- The Databricks check is marked not applicable based on org.engineering_stack and the tool view. Saying explicitly that the workbook outcome 'Databricks ... available with write access' is therefore met as N/A, not as a pass, would help the people at the gate.
+
 ## How the agent worked
 
-- Approach: I loaded the data-engineering-steps skill for DE-01 and read both contracted inputs: feat.tasks and org.engineering_stack. From feat.tasks I found the Data Engineering scope: TSK-01 and TSK-02 both change ap_pipeline only. The hook denies shell commands for DE-01, so I checked the checkout with Read and Glob instead. I read .git/HEAD, the main and dev refs, the feature/story reflog, .git/config, ci.py, __init__.py, schedule.json and README.md, and used the tool view for write access. A memory search added nothing new. I wrote task.repo_access with each check and its source. Two items are non-blocking open questions: whether the coverage package is installed for the CI interpreter, and whether both stories should share the feature/story branch.
-- Tools used: Skill:data-engineering-steps, Read, Glob, mcp__hobasa-context__memory_search, Write, Bash (denied by G9 hook; not used for evidence)
-- Helper subagents: none
-- Connector calls: none
-
-## Attempts (checks before any person saw the output)
-
-| Attempt | Session | Checks failed | Judge unsupported | Judge scores |
-|---|---|---|---|---|
-| 1 | new | 0 | 0 | {'correct': 5, 'complete': 5, 'grounded': 4, 'useful': 5} |
-
-## Improvements the independent judge suggests (non-blocking, for the people at the gate)
-
-- P-2 lists the files in ap_pipeline (dq.py, ingest.py, pipeline.py, transform.py, tests/test_pipeline.py, data/sample_feed.csv and others). The list is correct against the checkout, but it cites tool:repo-access and file:ap_pipeline/README.md, and neither source lists those files. The citation should name the checkout listing directly, or cite each file as file:ap_pipeline/<path>.
-- RA-1 says a file search 'found no site-packages/coverage' under the Command Line Tools Python framework. Nothing in the output records which path was searched, so a reviewer cannot repeat the check. Record the searched path, or keep only the open question RAQ-1.
-- P-8 says the step hook denied push and other remote operations. This is the agent's own observation and no cited source backs it. The output should mark it as the agent's observation (the G9 hook 'may run only no shell commands' is the likely source).
-
-Details: `result_attempt<N>.json` (claims with sources), `checks_attempt<N>.json`, `judge_attempt<N>.json`.
+- **Approach:** I followed the DE-01 procedure in the data-engineering-steps skill. First I read both inputs. feat.tasks puts the DE lane tasks TSK-01 and TSK-02 in ap_pipeline, and org.engineering_stack states there is no Databricks or database. Shell commands are not allowed in this step, so I checked the repository by reading its files: the git metadata (HEAD, the refs for main, dev and feature/story, config), CLAUDE.md, README.md, ci.py, the version file, every source module, the existing test file and the synthetic sample feed. I combined these with the tool:repo-access view, which reports availability, write access, the clean tree and the branch. Each repository fact in the output cites the file:ap_pipeline/<path> I read for it; tool:repo-access is cited only for what the tool view states.
+- **Tools used:** Skill:data-engineering-steps, Read, Glob, Write, tool:repo-access (step tool view)
+- **Helper subagents:** none
+- **Connector calls:** none
 
 ## Human evaluation
 
-| Role | By | Decision | Scores | Comment or reason |
+| Role | By | Decision | Scores (correct, complete, grounded, useful) | Comment or reason |
 |---|---|---|---|---|
 | Data engineer | sim.data_engineer | approve | — | automated checks and the independent judge passed |
+
+## Files in this folder (audit trail)
+
+- `brief_attempt<N>.md`: the exact brief the agent received
+- `result_attempt<N>.json`: the agent's structured answer (approach, tools, claims with their sources, open questions)
+- `checks_attempt<N>.json`: what the automated guardrail checks found
+- `judge_attempt<N>.json`, `judge_brief_attempt<N>.md`: the independent judge
+- `outputs/`: the outputs as approved
