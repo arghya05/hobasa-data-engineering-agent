@@ -9,8 +9,8 @@
 
 | Item | Prepared input (this repository) | Read from (producer in GitHub) | Commit | Produced by |
 |---|---|---|---|---|
-| task.components | hobasa-data-engineering-agent/inputs/FEAT-ZD-48600/DE-05/task.components.md | hobasa-data-engineering-agent/outputs/FEAT-ZD-48600/task.components.md | a126bc4 | DE-04 |
-| org.data_model | hobasa-data-engineering-agent/inputs/FEAT-ZD-48600/DE-05/org.data_model.md | hobasa-agentic-sdlc/features/FEAT-ZD-48600/org-overrides/org.data_model.md | a6b3e2a | source |
+| task.components | hobasa-data-engineering-agent/inputs/FEAT-ZD-48600/DE-05/task.components.md | hobasa-data-engineering-agent/outputs/FEAT-ZD-48600/task.components.md | e526c4e | DE-04 |
+| org.data_model | hobasa-data-engineering-agent/inputs/FEAT-ZD-48600/DE-05/org.data_model.md | hobasa-agentic-sdlc/features/FEAT-ZD-48600/org-overrides/org.data_model.md | 3b03f15 | source |
 
 Full brief per attempt: `brief_attempt<N>.md` (trigger event, owner answers, tool view, refusal reasons).
 
@@ -30,24 +30,23 @@ no file changes in this step
 
 ## How the agent worked
 
-- Approach: Attempt 2 fixes the single G1 refusal. The output cited a CI run (test count, failure count, coverage) to tool:ci, and this step does not receive a tool:ci view. I removed that sentence and every CI figure from the output and the claims. Section 5 now says only that this step changes no code, citing the tool view (tool:repo), which shows transform.py without paid_date and no delays.py. I re-fetched both contracted inputs with context_get. task.components is now at revision a126bc4 and its content is unchanged. org.data_model is still a6b3e2a. I re-fetched feat.design as background so its receipt is current. I updated the header to attempt 2 and to the new task.components revision, and rewrote feat.data_model_change.md in full. Everything else is as before: I compared the registered Invoice entity field by field with the feed v2 → v3 source contract and with transform.to_model in the tool view. I added the Rejected-row reason value 'paid_date' and the derived in-memory Delay history (DC-2), and I listed the knowledge-graph relations, the compatibility checks and the schema validation rules for unit tests. The step changes the data model only, so I made no code change; the code belongs to the TC-1 and TC-2 budgets.
-- Tools used: mcp__hobasa-context__context_get (task.components, org.data_model, feat.design), Write
-- Helper subagents: Agent
+- Approach: I followed the DE-05 procedure in the data-engineering-steps skill, which reads task.components and org.data_model and writes feat.data_model_change. I read both contracted inputs, the ap_pipeline tool view and the shared memory and journey board. Through context_list and context_get I read the approved feat.design (DES-02) as background, with a receipt, to ground the DC-1/DC-2 contracts and the B1.2 to B1.5 rules. I ran the allowed CI command and git status on the unchanged checkout to confirm the baseline. Both passed, and the working tree was clean. A stale draft from another run was already at the output path: it said attempt 2, used other input revisions and old item IDs (TC-1/TC-2). I replaced it in full with an attempt-1 document built on the current inputs (IN-1 to IN-9). The step changes the data model only. Code changes (IN-3, IN-7) belong to DE-08, so I left src/ap_pipeline/ untouched. No connector was needed.
+- Tools used: Skill (data-engineering-steps), Read, Glob, Grep, mcp__hobasa-context__context_list, mcp__hobasa-context__context_get (feat.design), Bash (/usr/bin/python3 ci.py; git status), Write, Edit
+- Helper subagents: none
 - Connector calls: none
 
 ## Attempts (checks before any person saw the output)
 
 | Attempt | Session | Checks failed | Judge unsupported | Judge scores |
 |---|---|---|---|---|
-| 1 | new | 1 | 1 | {'correct': 4, 'complete': 4, 'grounded': 4, 'useful': 4} |
-| 2 | resumed | 0 | 0 | {'correct': 5, 'complete': 4, 'grounded': 5, 'useful': 4} |
+| 1 | new | 0 | 0 | {'correct': 5, 'complete': 5, 'grounded': 5, 'useful': 5} |
 
 ## Improvements the independent judge suggests (non-blocking, for the people at the gate)
 
-- The brief says to run `/usr/bin/python3 ci.py` until it passes. The output says no code was changed, which matches the checkout: `src/ap_pipeline/` has no `paid_date` and no `delays.py`. It does not say outright that CI was not run in this step. One cited line saying so (record:brief; tool:repo) would answer the question that led to the attempt-1 refusal.
-- Section 2.4 cites record:memory D-2026-031 for `delay_days` being calendar days. D-2026-031 is about aging buckets. The calendar-day rule for `delay_days` comes from feat.design NF-2, so cite that as the main source and give D-2026-031 only as background.
-- DMQ-A (whether to register the Rejected-row reason and the Delay history structure org-wide) has no follow-up step. Name the step or person who would update org.data_model, so the gap is not left open for the DE coding step.
-- Section 4 lists the schema validation rules but does not map them to the planned test names in feat.design B1.5 (for example `test_invalid_paid_date_rejected`, `test_existing_reason_wins`). Adding the mapping would let the later unit-test step use it directly.
+- Section 5 says CI passed and `git status` showed a clean working tree, but cites only "result from this step's CI run". The agent's session transcript backs this: 'Ran 3 tests ... OK', 'passed': true, 'On branch feature/story', 'nothing to commit, working tree clean'. Neither the brief nor the tool view contains that result, though, so the gate cannot check it from the cited sources. Quote the CI summary (3 tests, passed, no static issues) or cite the CI tool result directly.
+- Section 1 (Delay history row) and 2.4 add the Delay history as part of the DE-05 model change. The DE-04 hand-off (task.components section 7) said the new `paid_date` reject reason is 'the only addition to record', and that DE-07 owns IN-7's transformation detail. Add a sentence that the Delay history is recorded here as a model element only, with its implementation detail left to DE-07, so the two outputs don't seem to overlap.
+- R-I3 (a v3 header spelled differently loads silently as `paid_date = None`) is carried only indirectly through DMQ-2. The data model's compatibility table (section 3) or the schema validation rules (section 4) could name this silent-null risk explicitly.
+- Section 4 states the boundary rule for Delay history values but gives no explicit boundary example. Under L-007 you could add a case such as `paid_date == due_date` giving delay 0, and the negative-delay case, as named validation rows for DE-09.
 
 Details: `result_attempt<N>.json` (claims with sources), `checks_attempt<N>.json`, `judge_attempt<N>.json`.
 

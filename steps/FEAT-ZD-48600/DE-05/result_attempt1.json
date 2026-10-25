@@ -1,75 +1,75 @@
 {
   "structured": {
-    "approach": "I followed the data-engineering-steps skill for DE-05. First I fetched both contracted inputs, task.components (e777bda) and org.data_model (a6b3e2a), through context_get to get receipts. Then I fetched the DES-02 output feat.design through context_get as background, because DE-04 points to its DC-1, DC-2 and B1.2 to B1.4 sections for the record and delay shapes. I compared the registered Invoice entity field by field against the source contract (feed v2 \u2192 v3) and against the current transform.to_model code in the tool view. The step changes the data model only, so I made no code change. The code for the change belongs to the TC-1 and TC-2 budgets in the later coding step, so I did not run ahead of the task plan. I ran the CI once on the unchanged branch to record a green baseline. I wrote feat.data_model_change.md and had the verifier subagent check it. I fixed the three findings it raised: approval wording now cites the journey board, step IDs that no cited source names are gone, and the workbook action and gate text now cite record:brief.",
+    "approach": "I followed the DE-05 procedure in the data-engineering-steps skill, which reads task.components and org.data_model and writes feat.data_model_change. I read both contracted inputs, the ap_pipeline tool view and the shared memory and journey board. Through context_list and context_get I read the approved feat.design (DES-02) as background, with a receipt, to ground the DC-1/DC-2 contracts and the B1.2 to B1.5 rules. I ran the allowed CI command and git status on the unchanged checkout to confirm the baseline. Both passed, and the working tree was clean. A stale draft from another run was already at the output path: it said attempt 2, used other input revisions and old item IDs (TC-1/TC-2). I replaced it in full with an attempt-1 document built on the current inputs (IN-1 to IN-9). The step changes the data model only. Code changes (IN-3, IN-7) belong to DE-08, so I left src/ap_pipeline/ untouched. No connector was needed.",
     "tools_used": [
       "Skill (data-engineering-steps)",
-      "mcp__hobasa-context__context_list",
-      "mcp__hobasa-context__context_get (task.components, org.data_model, feat.design)",
-      "mcp__hobasa-context__memory_search",
       "Read",
+      "Glob",
       "Grep",
-      "Bash (/usr/bin/python3 ci.py, baseline only)",
-      "Agent (verifier)",
+      "mcp__hobasa-context__context_list",
+      "mcp__hobasa-context__context_get (feat.design)",
+      "Bash (/usr/bin/python3 ci.py; git status)",
       "Write",
       "Edit"
     ],
     "claims": [
       {
-        "text": "The registered Invoice entity already holds paid_date as date or None, noted as added in feed v3, beside id, vendor, due_date, amount (Decimal, 2 dp) and paid.",
+        "text": "The registered Invoice entity already includes paid_date (date or None), added in feed v3, so no Invoice field is added, removed or retyped.",
         "source": "org.data_model"
       },
       {
-        "text": "transform.to_model does not produce paid_date yet; its docstring lists only id, vendor, due_date, amount and paid, so paid_date is registered but not yet implemented.",
-        "source": "tool:repo; org.data_model"
-      },
-      {
-        "text": "Feed v3 adds the optional paid_date column, and ingestion needs no code change because csv.DictReader keys each row by its header; a v2 feed keeps loading.",
-        "source": "task.components"
-      },
-      {
-        "text": "The Rejected row gains the new reason value 'paid_date', which reaches reject_reasons through dq.quality_report with no change to dq.",
-        "source": "task.components; tool:repo"
-      },
-      {
-        "text": "The new derived Delay history is Dict[str, List[int]]. It holds only paid records that have a paid_date, with delay_days = (paid_date - due_date).days, in feed order, and negative values are kept.",
-        "source": "journey:feat.design; task.components"
-      },
-      {
-        "text": "paid_date is validated only after the existing field checks pass, and an unpaid record with a valid paid_date keeps it. The design still marks both rules as pending.",
-        "source": "journey:feat.design"
-      },
-      {
-        "text": "No storage, database or schema migration is involved; the Delay history stays in memory.",
-        "source": "task.components; journey:feat.design"
-      },
-      {
-        "text": "Amounts stay Decimal and are never converted to float.",
-        "source": "record:memory; org.data_model"
-      },
-      {
-        "text": "The ap_pipeline package version today is 0.4.0.",
+        "text": "transform.to_model today produces only id, vendor, due_date, amount and paid. It does not produce paid_date, and it rejects rows with reason type(e).__name__.",
         "source": "tool:repo"
       },
       {
-        "text": "CI on the unchanged feature/story branch passed: 3 tests run, 0 failures, coverage 100.0.",
-        "source": "tool:ci"
+        "text": "IN-3 adds PAID_DATE_REASON = \"paid_date\" and _parse_paid_date. paid_date is parsed only after the existing try block succeeds, so the existing reject reason wins.",
+        "source": "task.components; journey:feat.design"
+      },
+      {
+        "text": "The Rejected row gains the new reason value paid_date. dq.quality_report needs no change because reject_reasons is the sorted set of reasons.",
+        "source": "task.components; tool:repo"
+      },
+      {
+        "text": "The Delay history (DC-2) is a new derived in-memory structure Dict[str, List[int]], produced by delays.delays_by_vendor. delay_days = (paid_date - due_date).days, and it covers only paid records with a paid_date, in feed order, with negative values kept.",
+        "source": "task.components; journey:feat.design"
+      },
+      {
+        "text": "Feed v2 without a paid_date column still loads, with paid_date = None on every record. Existing keys, the to_model signature and the (records, rejected) shape are unchanged.",
+        "source": "task.components; journey:feat.design"
+      },
+      {
+        "text": "No storage, database or schema migration is involved, and pipeline.run and schedule.json stay unchanged.",
+        "source": "task.components; journey:feat.design"
+      },
+      {
+        "text": "The package version today is 0.4.0.",
+        "source": "tool:repo; task.components"
+      },
+      {
+        "text": "amount stays Decimal, never float.",
+        "source": "record:memory; org.data_model"
+      },
+      {
+        "text": "Invalid paid_date test values are \"2026-13-01\" and \"not-a-date\" only.",
+        "source": "task.components; journey:feat.design"
       }
     ],
     "open_questions": [
-      "Should the registered org.data_model be extended with the Rejected row reason value 'paid_date' and the Delay history structure? Today it describes only the Invoice entity. (Owner: data engineering lead / data modelers; non-blocking)",
-      "Carried from DE-04 (CQ-I1): is the feed v3 column spelled exactly 'paid_date'? (Owner: feed owner; non-blocking; this output assumes 'paid_date')",
-      "Carried OQ-B6 / DD-7: should an unpaid record keep a valid paid_date? (Interim answer: it is kept and the Delay history ignores it; non-blocking)",
-      "Carried DQ-4: should delays_by_vendor be re-exported from ap_pipeline/__init__.py? (Interim answer: no; non-blocking)"
+      "DMQ-1: Should org.data_model be extended org-wide with the Rejected-row reason value 'paid_date' and the Delay history structure? Today it describes only Invoice. Interim: this document is the feature-level change. Owner: data engineering lead / data modelers.",
+      "DMQ-2 (carried CQ-I1): Is the feed v3 header spelled exactly 'paid_date'? Interim: yes.",
+      "DMQ-3 (carried OQ-B6/DD-7): Should an unpaid record keep a valid paid_date? Interim: yes; the Delay history ignores it.",
+      "DMQ-4 (carried DQ-4): Should delays_by_vendor be re-exported from __init__.py? Interim: no.",
+      "DMQ-5 (carried TQ-10/DD-6): Does an existing reject reason win over paid_date? Interim: yes."
     ],
-    "summary": "The DE-05 data model change for FEAT-ZD-48600 is written to outputs/FEAT-ZD-48600/feat.data_model_change.md. The registered Invoice entity already includes paid_date (date or None, feed v3), and I confirmed it field by field against the feed contract and the current code. paid_date is registered but transform.to_model does not produce it yet; the TC-1 change implements it. I added two items the registered model does not hold yet: the Rejected-row reason value 'paid_date' and the derived in-memory Delay history Dict[str, List[int]], which delays_by_vendor produces and ap_forecast consumes. The output also covers knowledge-graph relations, compatibility (feed v2 still loads and no key or signature changes) and schema validation rules for the unit-test step. Nothing is removed or retyped, and there is no storage or migration. I changed no code in this step. CI on the unchanged branch passes. There are no blocking questions; the main open question is whether to register the two new structures in org.data_model org-wide."
+    "summary": "I wrote feat.data_model_change for DE-05, attempt 1. The registered Invoice entity already has paid_date (date or None), so no Invoice field is added, removed or retyped. The model change has three parts. First, the feed v3 contract gains an optional paid_date column. Second, the Rejected row gains the reason value 'paid_date'. Third, a new in-memory Delay history structure, Dict[str, List[int]], is produced by delays_by_vendor and consumed by ap_forecast. The document also covers compatibility (feed v2 still loads), knowledge-graph relations and schema-validation rules for DE-09. There is no storage or migration and no code change in this step; IN-3 and IN-7 are implemented in DE-08. CI passes on the unchanged checkout. There are five non-blocking open questions and no blocking ones."
   },
   "meta": {
     "subtype": "success",
     "is_error": false,
-    "num_turns": 23,
-    "session_id": "ab9fb8c5-593e-4109-91bc-e25655d252b7",
-    "total_cost_usd": 1.2188088,
+    "num_turns": 16,
+    "session_id": "35c90e0a-7fd0-4890-99b6-1520e28a0fda",
+    "total_cost_usd": 0.9441146,
     "permission_denials": [],
-    "result": "{\"approach\":\"I followed the data-engineering-steps skill for DE-05. First I fetched both contracted inputs, task.components (e777bda) and org.data_model (a6b3e2a), through context_get to get receipts. Then I fetched the DES-02 output feat.design through context_get as background, because DE-04 points to its DC-1, DC-2 and B1.2 to B1.4 sections for the record and delay shapes. I compared the registered Invoice entity field by field against the source contract (feed v2 \u2192 v3) and against the current transform.to_model code in the tool view. The step changes the data model only, so I made no code change. The code for the change belongs to the TC-1 and TC-2 budgets in the later coding step, so I did not run ahead of the task plan. I ran the CI once on the unchanged branch to record a green baseline. I wrote feat.data_model_change.md and had the verifier subagent check it. I fixed the three findings it raised: approval wording now cites the journey board, step IDs that no cited source names are gone, and the workbook action and gate text now cite record:brief.\",\"tools_used\":[\"Skill (data-engineering-steps)\",\"mcp__hobasa-context__context_list\",\"mcp__hobasa-context__context_get (task.components, org.data_model, feat.design)\",\"mcp__hobasa-context__memory_search\",\"Read\",\"Grep\",\"Bash (/usr/bin/python3 ci.py, baseline only)\",\"Agent (verifier)\",\"Write\",\"Edit\"],\"claims\":[{\"text\":\"The registered Invoice entity already holds paid_date as date or None, noted as added in feed v3, beside id, vendor, due_date, amount (Decimal, 2 dp) and paid.\",\"source\":\"org.data_model\"},{\"text\":\"transform.to_model does not produce paid_date yet; its docstring lists only id, vendor, due_date, amount and paid, so paid_date is registered but not yet implemented.\",\"source\":\"tool:repo; org.data_model\"},{\"text\":\"Feed v3 adds the optional paid_date column, and ingestion needs no code change because csv.DictReader keys each row by its header; a v2 feed keeps loading.\",\"source\":\"task.components\"},{\"text\":\"The Rejected row gains the new reason value 'paid_date', which reaches reject_reasons through dq.quality_report with no change to dq.\",\"source\":\"task.components; tool:repo\"},{\"text\":\"The new derived Delay history is Dict[str, List[int]]. It holds only paid records that have a paid_date, with delay_days = (paid_date - due_date).days, in feed order, and negative values are kept.\",\"source\":\"journey:feat.design; task.components\"},{\"text\":\"paid_date is validated only after the existing field checks pass, and an unpaid record with a valid paid_date keeps it. The design still marks both rules as pending.\",\"source\":\"journey:feat.design\"},{\"text\":\"No storage, database or schema migration is involved; the Delay history stays in memory.\",\"source\":\"task.components; journey:feat.design\"},{\"text\":\"Amounts stay Decimal and are never converted to float.\",\"source\":\"record:memory; org.data_model\"},{\"text\":\"The ap_pipeline package version today is 0.4.0.\",\"source\":\"tool:repo\"},{\"text\":\"CI on the unchanged feature/story branch passed: 3 tests run, 0 failures, coverage 100.0.\",\"source\":\"tool:ci\"}],\"open_questions\":[\"Should the registered org.data_model be extended with the Rejected row reason value 'paid_date' and the Delay history structure? Today it describes only the Invoice entity. (Owner: data engineering lead / data modelers; non-blocking)\",\"Carried from DE-04 (CQ-I1): is the feed v3 column spelled exactly 'paid_date'? (Owner: feed owner; non-blocking; this output assumes 'paid_date')\",\"Carried OQ-B6 / DD-7: should an unpaid record keep a valid paid_date? (Interim answer: it is kept and the Delay history ignores it; non-blocking)\",\"Carried DQ-4: should delays_by_vendor be re-exported from ap_pipeline/__init__.py? (Interim answer: no; non-blocking)\"],\"summary\":\"The DE-05 data model change for FEAT-ZD-48600 is written to outputs/FEAT-ZD-48600/feat.data_model_change.md. The registered Invoice entity already includes paid_date (date or None, feed v3), and I confirmed it field by field against the feed contract and the current code. paid_date is registered but transform.to_model does not produce it yet; the TC-1 change implements it. I added two items the registered model does not hold yet: the Rejected-row reason value 'paid_date' and the derived in-memory Delay history Dict[str, List[int]], which delays_by_vendor produces and ap_forecast consumes. The output also covers knowledge-graph relations, compatibility (feed v2 still loads and no key or signature changes) and schema validation rules for the unit-test step. Nothing is removed or retyped, and there is no storage or migration. I changed no code in this step. CI on the unchanged branch passes. There are no blocking questions; the main open question is whether to register the two new structures in org.data_model org-wide.\"}"
+    "result": "{\"approach\":\"I followed the DE-05 procedure in the data-engineering-steps skill, which reads task.components and org.data_model and writes feat.data_model_change. I read both contracted inputs, the ap_pipeline tool view and the shared memory and journey board. Through context_list and context_get I read the approved feat.design (DES-02) as background, with a receipt, to ground the DC-1/DC-2 contracts and the B1.2 to B1.5 rules. I ran the allowed CI command and git status on the unchanged checkout to confirm the baseline. Both passed, and the working tree was clean. A stale draft from another run was already at the output path: it said attempt 2, used other input revisions and old item IDs (TC-1/TC-2). I replaced it in full with an attempt-1 document built on the current inputs (IN-1 to IN-9). The step changes the data model only. Code changes (IN-3, IN-7) belong to DE-08, so I left src/ap_pipeline/ untouched. No connector was needed.\",\"tools_used\":[\"Skill (data-engineering-steps)\",\"Read\",\"Glob\",\"Grep\",\"mcp__hobasa-context__context_list\",\"mcp__hobasa-context__context_get (feat.design)\",\"Bash (/usr/bin/python3 ci.py; git status)\",\"Write\",\"Edit\"],\"claims\":[{\"text\":\"The registered Invoice entity already includes paid_date (date or None), added in feed v3, so no Invoice field is added, removed or retyped.\",\"source\":\"org.data_model\"},{\"text\":\"transform.to_model today produces only id, vendor, due_date, amount and paid. It does not produce paid_date, and it rejects rows with reason type(e).__name__.\",\"source\":\"tool:repo\"},{\"text\":\"IN-3 adds PAID_DATE_REASON = \\\"paid_date\\\" and _parse_paid_date. paid_date is parsed only after the existing try block succeeds, so the existing reject reason wins.\",\"source\":\"task.components; journey:feat.design\"},{\"text\":\"The Rejected row gains the new reason value paid_date. dq.quality_report needs no change because reject_reasons is the sorted set of reasons.\",\"source\":\"task.components; tool:repo\"},{\"text\":\"The Delay history (DC-2) is a new derived in-memory structure Dict[str, List[int]], produced by delays.delays_by_vendor. delay_days = (paid_date - due_date).days, and it covers only paid records with a paid_date, in feed order, with negative values kept.\",\"source\":\"task.components; journey:feat.design\"},{\"text\":\"Feed v2 without a paid_date column still loads, with paid_date = None on every record. Existing keys, the to_model signature and the (records, rejected) shape are unchanged.\",\"source\":\"task.components; journey:feat.design\"},{\"text\":\"No storage, database or schema migration is involved, and pipeline.run and schedule.json stay unchanged.\",\"source\":\"task.components; journey:feat.design\"},{\"text\":\"The package version today is 0.4.0.\",\"source\":\"tool:repo; task.components\"},{\"text\":\"amount stays Decimal, never float.\",\"source\":\"record:memory; org.data_model\"},{\"text\":\"Invalid paid_date test values are \\\"2026-13-01\\\" and \\\"not-a-date\\\" only.\",\"source\":\"task.components; journey:feat.design\"}],\"open_questions\":[\"DMQ-1: Should org.data_model be extended org-wide with the Rejected-row reason value 'paid_date' and the Delay history structure? Today it describes only Invoice. Interim: this document is the feature-level change. Owner: data engineering lead / data modelers.\",\"DMQ-2 (carried CQ-I1): Is the feed v3 header spelled exactly 'paid_date'? Interim: yes.\",\"DMQ-3 (carried OQ-B6/DD-7): Should an unpaid record keep a valid paid_date? Interim: yes; the Delay history ignores it.\",\"DMQ-4 (carried DQ-4): Should delays_by_vendor be re-exported from __init__.py? Interim: no.\",\"DMQ-5 (carried TQ-10/DD-6): Does an existing reject reason win over paid_date? Interim: yes.\"],\"summary\":\"I wrote feat.data_model_change for DE-05, attempt 1. The registered Invoice entity already has paid_date (date or None), so no Invoice field is added, removed or retyped. The model change has three parts. First, the feed v3 contract gains an optional paid_date column. Second, the Rejected row gains the reason value 'paid_date'. Third, a new in-memory Delay history structure, Dict[str, List[int]], is produced by delays_by_vendor and consumed by ap_forecast. The document also covers compatibility (feed v2 still loads), knowledge-graph relations and schema-validation rules for DE-09. There is no storage or migration and no code change in this step; IN-3 and IN-7 are implemented in DE-08. CI passes on the unchanged checkout. There are five non-blocking open questions and no blocking ones.\"}"
   }
 }

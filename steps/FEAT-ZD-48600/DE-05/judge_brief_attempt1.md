@@ -11,13 +11,9 @@
 - org.data_model: `hobasa-data-engineering-agent/inputs/FEAT-ZD-48600/DE-05/org.data_model.md`
 
 ## Other GitHub files the agent read (valid sources when cited as file:<repository>/<path>)
-- `~/.claude/projects/-Users-arghyamukherjee-Documents-automaiton-final-document-e2e-run-runs-run-20261025-123936-feat-zd-48600-workspace-ap-pipeline/ab9fb8c5-593e-4109-91bc-e25655d252b7/tool-results/hook-3c9518d7-ee57-471d-840b-af8e756c5bc4-1-additionalContext.txt`
+- `~/.claude/projects/-Users-arghyamukherjee-Documents-automaiton-final-document-e2e-run-runs-run-20261025-141046-feat-zd-48600-workspace-ap-pipeline/35c90e0a-7fd0-4890-99b6-1520e28a0fda/tool-results/hook-76767c9d-0f83-4c5d-9e01-b5f7c126257f-1-additionalContext.txt`
 - `hobasa-data-engineering-agent/outputs/FEAT-ZD-48600/feat.data_model_change.md`
 - `hobasa-design-agent/outputs/FEAT-ZD-48600/feat.design.md`
-- `ap-pipeline-sample/src/ap_pipeline/__init__.py`
-- `ap-pipeline-sample/src/ap_pipeline/dq.py`
-- `ap-pipeline-sample/src/ap_pipeline/transform.py`
-- `ap-pipeline-sample/tests/test_pipeline.py`
 
 Shared memory and conventions: `memory/MEMORY.md` and `CLAUDE.md` in the SDLC repository.
 
@@ -32,14 +28,14 @@ Shared memory and conventions: `memory/MEMORY.md` and `CLAUDE.md` in the SDLC re
 - Gate (who approves this output): no gate: automated checks, the independent judge and sampled human evaluation
 
 ## Inputs (GitHub checkout; read them with Read, or context_get for a receipt)
-- task.components (Components, layers, sources or pipelines to change): `hobasa-data-engineering-agent/inputs/FEAT-ZD-48600/DE-05/task.components.md` (from hobasa-data-engineering-agent/outputs/FEAT-ZD-48600/task.components.md at commit e777bda)
-- org.data_model (Data Model and Knowledge Graph): `hobasa-data-engineering-agent/inputs/FEAT-ZD-48600/DE-05/org.data_model.md` (from hobasa-agentic-sdlc/features/FEAT-ZD-48600/org-overrides/org.data_model.md at commit a6b3e2a)
+- task.components (Components, layers, sources or pipelines to change): `hobasa-data-engineering-agent/inputs/FEAT-ZD-48600/DE-05/task.components.md` (from hobasa-data-engineering-agent/outputs/FEAT-ZD-48600/task.components.md at commit e526c4e)
+- org.data_model (Data Model and Knowledge Graph): `hobasa-data-engineering-agent/inputs/FEAT-ZD-48600/DE-05/org.data_model.md` (from hobasa-agentic-sdlc/features/FEAT-ZD-48600/org-overrides/org.data_model.md at commit 3b03f15)
 
 ## Outputs (write each file in full; the spine commits and pushes after evaluation and approval)
 - feat.data_model_change (Data Model change for the feature): write `hobasa-data-engineering-agent/outputs/FEAT-ZD-48600/feat.data_model_change.md`
 
 ## Code
-Work in repository `ap-pipeline-sample` (Python 3.9 (standard library)). You may change only: src/ap_pipeline/. Run the CI yourself with `/usr/bin/python3 ci.py` from the repository root (or delegate to the ci-runner subagent) until it passes. Do not commit or push; the spine does.
+Work in repository `ap-pipeline-sample` (Python 3.9 (standard library)). You may change only: src/ap_pipeline/. Shell commands allowed in this step: `/usr/bin/python3 ci.py`, `git status`, `git diff`, `git log`. Run the CI yourself with `/usr/bin/python3 ci.py` from the repository root (or delegate to the ci-runner subagent) until it passes. Do not commit or push; the spine does.
 
 ## How to work
 Decide the best way to do this step from the inputs and the workbook action, plan it (TodoWrite for multi-part work), then do it. Helper subagents you can delegate to: explorer, verifier, ci-runner (use the verifier before you finish when the output makes many factual statements). Use the shared memory (memory_search) for decisions and lessons. Connectors approved for you: api:osv (Known vulnerabilities for a dependency version (POST /v1/query with {"package":{"name":...,"ecosystem":"PyPI|npm"},"version":...})), api:pypi (Python package metadata: latest version, licence, release dates (GET /pypi/<package>/json)). Use one only when your inputs do not hold what you need; request a missing one with capability_request. You may also read any other file in the GitHub checkouts your step needs (for example other requirements when grouping, or code); cite it as file:<repository>/<path>.
