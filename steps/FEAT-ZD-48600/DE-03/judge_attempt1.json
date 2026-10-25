@@ -1,0 +1,17 @@
+{
+  "unsupported": [],
+  "improvements": [
+    "Section 5 names DE-05 'Data Model Changes' and DE-08 'Coding' but gives no source for those step names. They do appear in agents/hobasa-data-engineering-agent/README.md (lines 17 and 20), so cite that file.",
+    "The last line, '[Tool result] [ap_pipeline] No database in this repository's architecture; no migrations required', has no citation, and its wording differs from the brief's tool view ('ap_pipeline has no database; no migrations exist or are required'). Quote the tool view word for word and cite tool:repo-access, or drop the line.",
+    "Section 8 cites record:brief for 'No production or source-system data used: Pass'. The brief does not state this. It is the agent's own statement about how it worked, so label it that way instead of citing the brief.",
+    "Section 3 describes a search for database terms but gives no source. Name the scope searched (the whole ap_pipeline checkout, including tests) and the tool that ran it, so the gate can repeat the search. The judge ran the same search independently and also found no matches.",
+    "Section 6 cites record:memory but does not say whether memory_search was run. If the agent read the decisions only from MEMORY.md, say so."
+  ],
+  "scores": {
+    "correct": 5,
+    "complete": 4,
+    "grounded": 5,
+    "useful": 4
+  },
+  "notes": "I checked every statement against feat.tasks, feat.design, the brief's tool view, MEMORY.md and the six ap_pipeline source files. All of them match:\n- Data boundary: design A1 puts 'Storage, database, schema migration' out of scope.\n- Design rules: DD-1, NF-10, A8, DC-1 and DC-2 are stated as the design states them.\n- TSK-01 and TSK-02: files in budget and the must-not-change lists match feat.tasks.\n- Code facts match the source: the exception tuple in transform.py, sorted reject_reasons in dq.py, csv.DictReader over io.StringIO in ingest.py, pipeline.run composing the stages, schedule.json (daily, 02:00, Asia/Kolkata) and __version__ \"0.4.0\".\n- An independent case-insensitive search of the ap_pipeline checkout for sqlite|sql|database|migrat|cursor|connect( found no matches, which confirms the agent's search claim.\n- The memory IDs D-2026-031, D-2026-044, D-2026-050, L-007 and L-011 exist in MEMORY.md.\n- DBQ-1 is correctly carried from design DQ-1.\n\nI found no invented facts or contradictions. The only gaps are minor citation issues: the DE-05/DE-08 step names (real, but uncited), a paraphrased tool-result line at the end, and a self-attestation cited to the brief. The conclusion, that no database changes are required and the step is complete with nothing to apply, meets the workbook outcome."
+}

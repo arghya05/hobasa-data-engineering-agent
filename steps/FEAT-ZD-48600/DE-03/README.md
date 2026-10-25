@@ -30,8 +30,8 @@ no file changes in this step
 
 ## How the agent worked
 
-- Approach: Attempt 3 fixes the nine G2 refusals. I had read those repository files with Read in attempt 2, and again at the start of this attempt, but the citation checker still does not count those reads as received. So the output and the claims no longer cite any file:ap_pipeline/... item. Every repository fact now comes from items the step does receive. The tool view (tool:repo-access) covers 'no database, no migrations'. feat.design covers the code facts its author took from the repository: HC-3, the B1.1 module table, the B1.2 try block of to_model, the B1.3 feed-row shape, the schedule (daily, 02:00, Asia/Kolkata) and version 0.4.0. feat.tasks covers the files each task may change and the files it must not change. I used context_list to confirm the contracted items and their revisions. The finding is the same as before: no database change is required, the change register is empty, the logical paid_date change goes to DE-05 and DQ-1 is carried as non-blocking. The full rewrite also drops a '[Tool result]' line that had been added to the end of the file on disk. No connector was used, and no production data was read.
-- Tools used: Skill (data-engineering-steps), Read, mcp:hobasa-context context_list, Write
+- Approach: I followed the DE-03 procedure in the data-engineering-steps skill: it reads feat.tasks and feat.design and writes task.db_changes. First I read both inputs to find any storage, schema or migration need in the Data Engineering tasks (TSK-01, TSK-02) and in the design's data boundary, decisions and non-functional needs. Then I checked the ap_pipeline checkout. I listed its files with Glob, searched it for database terms with Grep (no matches) and read ingest.py, transform.py, dq.py, pipeline.py, schedule.json and __init__.py. All of this agrees with the tool view: there is no database and nothing to migrate. The output file already held an earlier draft labelled attempt 3. I read it before overwriting it with an attempt-1 version grounded in this run's inputs and code. Shell commands are not permitted in DE-03 (hook G9), so I used only Read, Glob and Grep. I used no connectors because the inputs held every fact I needed.
+- Tools used: Skill (data-engineering-steps), Read, Glob, Grep, Write
 - Helper subagents: none
 - Connector calls: none
 
@@ -39,17 +39,15 @@ no file changes in this step
 
 | Attempt | Session | Checks failed | Judge unsupported | Judge scores |
 |---|---|---|---|---|
-| 1 | new | 2 | — | — |
-| 2 | resumed | 9 | — | — |
-| 3 | resumed | 0 | 0 | {'correct': 5, 'complete': 4, 'grounded': 4, 'useful': 4} |
+| 1 | new | 0 | 0 | {'correct': 5, 'complete': 4, 'grounded': 5, 'useful': 4} |
 
 ## Improvements the independent judge suggests (non-blocking, for the people at the gate)
 
-- Section 8, 'No production or source-system data used': the text says 'only the step's inputs and the tool view were used', but this attempt also read the ap_pipeline files (transform.py, __init__.py, schedule.json, ingest.py, dq.py, pipeline.py, sample_feed.csv, README.md, CLAUDE.md). Reword it, for example: 'only the step inputs, the tool view and the ap_pipeline repository files were read; no source system was queried'.
-- The agent read the ap_pipeline code but cites only feat.design and feat.tasks for code facts. Add file: citations where the code confirms them: file:ap_pipeline/src/ap_pipeline/transform.py (line 14, the exception tuple), file:ap_pipeline/src/ap_pipeline/__init__.py (__version__ "0.4.0") and file:ap_pipeline/src/ap_pipeline/schedule.json (02:00). It should also state that a check of the repository found no database, SQL or migration code. That would independently support tool:repo-access.
-- Section 5 names DE-05 'Data Model Changes' and DE-08 'Coding' without a citation. Cite the agent README or the data-engineering-steps skill, where these step names are defined.
-- Remove the stray line at the end of the file ('[Tool result] [ap_pipeline] No database in this repository's architecture; no migrations required'). It is raw tool output pasted into the deliverable, and section 3 already says the same thing with a citation.
-- Section 8 cites only tool:repo-access for 'Required database changes completed'. Also cite feat.design (A1, DD-1) there, so the row shows that the design rules out storage, not only that the repository has none.
+- Section 5 names DE-05 'Data Model Changes' and DE-08 'Coding' but gives no source for those step names. They do appear in agents/hobasa-data-engineering-agent/README.md (lines 17 and 20), so cite that file.
+- The last line, '[Tool result] [ap_pipeline] No database in this repository's architecture; no migrations required', has no citation, and its wording differs from the brief's tool view ('ap_pipeline has no database; no migrations exist or are required'). Quote the tool view word for word and cite tool:repo-access, or drop the line.
+- Section 8 cites record:brief for 'No production or source-system data used: Pass'. The brief does not state this. It is the agent's own statement about how it worked, so label it that way instead of citing the brief.
+- Section 3 describes a search for database terms but gives no source. Name the scope searched (the whole ap_pipeline checkout, including tests) and the tool that ran it, so the gate can repeat the search. The judge ran the same search independently and also found no matches.
+- Section 6 cites record:memory but does not say whether memory_search was run. If the agent read the decisions only from MEMORY.md, say so.
 
 Details: `result_attempt<N>.json` (claims with sources), `checks_attempt<N>.json`, `judge_attempt<N>.json`.
 
