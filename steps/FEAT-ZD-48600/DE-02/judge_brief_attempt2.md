@@ -10,17 +10,24 @@
 - feat.tasks: `hobasa-data-engineering-agent/inputs/FEAT-ZD-48600/DE-02/feat.tasks.md`
 
 ## Other GitHub files the agent read (valid sources when cited as file:<repository>/<path>)
-- `~/.claude/projects/-Users-arghyamukherjee-Documents-automaiton-final-document-e2e-run-runs-run-20261025-123936-feat-zd-48600-workspace-ap-pipeline/0796d890-3980-470b-a3b7-ed23c05133a9/tool-results/hook-12c148e0-05f1-4871-972a-9cc8942c56a6-1-additionalContext.txt`
 - `hobasa-data-engineering-agent/outputs/FEAT-ZD-48600/task.secrets_scope.md`
+- `ap-pipeline-sample/CLAUDE.md`
+- `ap-pipeline-sample/ci.py`
+- `ap-pipeline-sample/src/ap_pipeline/__init__.py`
+- `ap-pipeline-sample/src/ap_pipeline/dq.py`
+- `ap-pipeline-sample/src/ap_pipeline/ingest.py`
+- `ap-pipeline-sample/src/ap_pipeline/pipeline.py`
+- `ap-pipeline-sample/src/ap_pipeline/schedule.json`
+- `ap-pipeline-sample/src/ap_pipeline/transform.py`
 
 Shared memory and conventions: `memory/MEMORY.md` and `CLAUDE.md` in the SDLC repository.
 
 ## The step brief the agent was given (a valid source, cited as record:brief)
 
-Your previous result for this step was refused. Fix every point, rewrite the output files in full, and return the structured result again.
+Your previous result for this step was refused. Fix every point, rewrite the output files in full, and return the structured result again. The outputs describe the work itself: never mention earlier attempts, refusals or this review in them.
 
 ## Refusal reasons
-G1 judge found an unsupported statement: "SS-1 | ... Coding does not read the production feed, and this lane never reads source-system production data. | ... | feat.tasks (TSK-01 "Depends on"); record:b" (Neither cited source states the general rule that the lane 'never reads source-system production data'. feat.tasks only says to build on synthetic v3 rows, and )
+G2 claim cites file:ap_pipeline/CLAUDE.md but the agent never read that file in this session
 
 ## Step brief (unchanged except the attempt number)
 # Step DE-02: Access to secrets (attempt 2) for FEAT-ZD-48600

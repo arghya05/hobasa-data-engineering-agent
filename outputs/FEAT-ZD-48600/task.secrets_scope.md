@@ -1,61 +1,73 @@
 # task.secrets_scope: FEAT-ZD-48600
 
-Secrets scope for the Data Engineering lane of FEAT-ZD-48600 ("Show which overdue invoices belong to vendors that usually pay late"). This is DE-02, Access to secrets (attempt 2). The step checks which secrets the lane's tasks need and whether they are available with access permissions, and asks for access where needed. Only secret **names** are recorded here, never values. There is no gate: automated checks, the independent judge and sampled human evaluation review this output.
+Secrets scope for the Data Engineering tasks of FEAT-ZD-48600 (ZD-48600, "Show which overdue invoices belong to vendors that usually pay late"). Step: DE-02 Access to secrets. This file lists secret **names only**. No secret value appears here, and the restricted permission table is used by reference only.
 
 | Field | Value | Source |
 |---|---|---|
 | Trace ID | FEAT-ZD-48600 | record:brief |
-| Step | DE-02 Access to secrets (attempt 2) | record:brief |
-| Trigger | Task creation (feat.tasks from DES-04 Task Creation) | record:brief; feat.tasks |
-| Inputs | feat.tasks (b0fd4d2); org.permission_table (restricted, passed by reference only, not opened) | record:brief |
-| Repository | ap_pipeline, branch `feature/story` | journey:task.repo_access; tool:repo-access |
-| Data Engineering tasks in scope | TSK-01 (STORY-01, optional `paid_date`), TSK-02 (STORY-02, `delays_by_vendor`) | feat.tasks (section 1) |
-| Result | **Ready. No secrets are required, none are granted, and no access request is needed.** | tool:repo-access; feat.tasks |
+| Step | DE-02 Access to secrets | record:brief |
+| Owner / gate | Data engineer / no gate: automated checks, independent judge, sampled human evaluation | record:brief |
+| Inputs | feat.tasks (from hobasa-design-agent, commit b0fd4d2); org.permission_table (restricted, by reference) | record:brief |
+| Repository in scope | ap_pipeline | feat.tasks (section 1, TSK-01 and TSK-02) |
 
-## 1. Secrets needed per task
+## 1. Data Engineering tasks in scope
 
-| Task | What the task does | External system or credential touched | Secrets needed | Source |
+| Task | Story | What it touches | External access it needs | Source |
 |---|---|---|---|---|
-| TSK-01 | `to_model` in `src/ap_pipeline/transform.py` reads an optional `paid_date` and rejects invalid values with reason `'paid_date'` | None. `ingest.py`, `pipeline.py` and `schedule.json` are on the "Must not change" list; coding builds on synthetic v3 rows | None | feat.tasks (TSK-01) |
-| TSK-02 | New pure function `delays_by_vendor` in new `src/ap_pipeline/delays.py` | None. "No I/O; do not change `records`" | None | feat.tasks (TSK-02) |
+| TSK-01 | STORY-01 | `src/ap_pipeline/transform.py`, `src/ap_pipeline/__init__.py` (version step), `tests/test_pipeline.py` | None. Built on synthetic feed v3 rows. Feed v3 in production (PQ-6) gates release, not coding | feat.tasks (TSK-01) |
+| TSK-02 | STORY-02 | New `src/ap_pipeline/delays.py`, new `tests/test_delays.py` | None. Pure function, "No I/O" | feat.tasks (TSK-02) |
 
-Both tasks use only the Python 3.9 standard library and choose no new technology (feat.tasks, introduction: feat.design DD-1). Databricks is not applicable to ap_pipeline, and DE-01 found no workspace credential to check (journey:task.repo_access, P-1 and section 2).
+The other tasks (TSK-03 to TSK-08) belong to the Data Science, Backend, Frontend and Testing lanes. They are out of scope for this agent (feat.tasks, section 1).
 
-## 2. Secrets scope by environment (names only)
+## 2. Secrets required
 
-| Environment | Secret names granted | Secret names required | Gap | Source |
-|---|---|---|---|---|
-| Local development and CI (`/usr/bin/python3 ci.py` on `feature/story`) | None | None | None | tool:repo-access; journey:task.repo_access (P-5, P-7) |
-| Integration (`dev`) and released (`main`) branches | None | None | None | tool:repo-access; feat.tasks (section 2) |
+**None.** TSK-01 and TSK-02 need no secret in any environment.
 
-The permission table states that no secrets are required or granted for ap_pipeline (tool:repo-access, which reports the permission table). This output does not open or quote org.permission_table, because it is restricted and passed by reference only (record:brief).
+Evidence:
 
-## 3. Access requests
+1. Both tasks change only Python code and its unit tests. TSK-02 is explicitly "No I/O", and TSK-01 builds on synthetic rows (feat.tasks, TSK-01 and TSK-02).
+2. The pipeline entry point takes the feed as text. `run(csv_text)` calls `parse_feed`, then `to_model`, then `quality_report`, and opens no connection (file:ap_pipeline/src/ap_pipeline/pipeline.py).
+3. Ingestion uses the standard library `csv` module to parse CSV text held in memory. It reads no file, URL or credential (file:ap_pipeline/src/ap_pipeline/ingest.py).
+4. The transform and data-quality modules work on in-memory rows only. They import only `datetime`, `decimal` and `typing` and read no environment variable (file:ap_pipeline/src/ap_pipeline/transform.py; file:ap_pipeline/src/ap_pipeline/dq.py).
+5. The package file holds only the docstring and `__version__ = "0.4.0"`, which TSK-01 steps up (file:ap_pipeline/src/ap_pipeline/__init__.py; feat.tasks, section 2).
+6. CI runs locally as `/usr/bin/python3 ci.py` (file:ap_pipeline/CLAUDE.md). `ci.py` compiles the code, runs the unit tests, measures coverage against a minimum of 90.0 and runs static checks. It reads no environment variable or credential and makes no network call (file:ap_pipeline/ci.py).
+7. The schedule file contains only `frequency`, `time` and `timezone` (daily, 02:00, Asia/Kolkata), with no credential reference (file:ap_pipeline/src/ap_pipeline/schedule.json).
+8. The ap_pipeline tool registry says no secrets are required or granted for this repository (tool:repo-access, from the permission table).
 
-| # | Secret name | Environment | Requested from | Status |
-|---|---|---|---|---|
-| — | None | — | — | No request raised: no task in scope needs a secret (sections 1 and 2) |
+## 3. Secrets granted (names only)
 
-## 4. Observations (non-blocking)
-
-| ID | Observation | Interim handling | Source |
+| Environment | Secret name | Granted | Source |
 |---|---|---|---|
-| SS-1 | Feed v3 in production (PQ-6) gates the release of TSK-01, not its coding. Coding builds on synthetic v3 rows, so it needs no feed credential. | No secret for coding. If the release needs a feed credential, DE-02 runs again on that re-entry trigger. | feat.tasks (TSK-01 "Depends on"); record:brief (trigger: "Task creation, or any re-entry trigger") |
-| SS-2 | No input names a secret for any later step of this lane. | None granted now. If a later step needs a secret, DE-02 runs again on that re-entry trigger. | tool:repo-access; record:brief (trigger: "Task creation, or any re-entry trigger") |
+| Development (feature branch, local CI) | none | Not needed | tool:repo-access |
+| Integration (`dev`) | none | Not needed | tool:repo-access |
+| Production (`main`) | none | Not needed | tool:repo-access |
 
-## 5. Validation check
+Required versus granted: nothing is required and nothing is granted. There is **no gap**, so **no access request** is raised. There is also no excess access to flag for revocation. The branch names come from file:ap_pipeline/CLAUDE.md.
 
-| Check | Result |
-|---|---|
-| Every Data Engineering task checked for secret needs | Pass (TSK-01, TSK-02; section 1) |
-| Secrets required vs. granted, per environment | Pass: none required, none granted, no gap (section 2) |
-| Secret values in this output | None. Names only, and there are no names to list |
-| Restricted input handled by reference | Pass: org.permission_table not opened (section 2) |
-| Data read by this step | feat.tasks, journey:task.repo_access and the tool view only |
-| Blocking questions | None |
+## 4. Data access boundary
 
+- Coding and tests use synthetic data only (`SYN-INV-*`, "Synthetic Vendor &lt;letter&gt;"). This task reads no source-system production data (feat.tasks, TSK-01 dependencies and TSK-08 implementation notes).
+- Feed v3 arriving in production (PQ-6) gates release only. It does not require this agent to hold a production feed credential (feat.tasks, TSK-01).
 
-[Tool result] [ap_pipeline] Tool registry: no secrets required or granted (permission table)
+## 5. Re-entry
+
+Re-check this scope (re-run DE-02) if a later step adds a connection, for example a file or network source in `ingest.py`, a Databricks workspace for scheduling, or a transport layer. feat.tasks lists `ingest.py`, `pipeline.py` and `schedule.json` as "Must not change" for TSK-01, and says a transport layer would re-trigger DES-01 (feat.tasks, TSK-01 and TSK-06).
+
+## 6. Open questions (non-blocking)
+
+| ID | Question | Interim answer | Owner (proposed) |
+|---|---|---|---|
+| SSQ-1 | `schedule.json` defines a daily run. The inputs do not say which runtime executes the schedule, or whether that runtime needs its own credential for the production feed. Does DE-13 scheduling need a secret? | Not needed for TSK-01 or TSK-02, which do not change the schedule. Re-check at DE-13 | Data engineering lead |
+
+## 7. Validation check
+
+| Check | Result | Source |
+|---|---|---|
+| Every DE task assessed for secrets | Pass (TSK-01, TSK-02) | feat.tasks |
+| Secret values absent from this file | Pass (names only; none required) | record:brief |
+| Required vs granted compared | Pass: none required, none granted, no gap | tool:repo-access |
+| Production data not used | Pass (synthetic only) | feat.tasks |
+| Blocking questions | None | none |
 
 
 [Tool result] [ap_pipeline] Tool registry: no secrets required or granted (permission table)

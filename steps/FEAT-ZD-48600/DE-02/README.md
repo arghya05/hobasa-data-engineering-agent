@@ -30,8 +30,8 @@ no file changes in this step
 
 ## How the agent worked
 
-- Approach: Attempt 2 fixes the G1 refusal. The SS-1 row said that "this lane never reads source-system production data", and neither cited source states that general rule. I removed the sentence. SS-1 now says only what feat.tasks supports: feed v3 in production (PQ-6) gates the release of TSK-01, not its coding, and coding builds on synthetic v3 rows. The re-entry handling is quoted from the brief's trigger ("Task creation, or any re-entry trigger"). I then checked every other statement the same way. I rewrote SS-2 because it named later lane steps (DE-13, DE-14) and email/Teams notifications that no cited source supports. It now says only that no input names a secret for any later step, citing tool:repo-access and the brief's trigger. I also replaced the "Production data read: None" validation row with the items this step actually read. The rest is unchanged. I re-checked the two Data Engineering tasks (TSK-01, TSK-02) in feat.tasks, which I fetched with context_get in attempt 1 for a receipt. I used the approved DE-01 output task.repo_access as background. The permission table's verdict comes from the tool view, because org.permission_table is restricted and passed by reference only. The outcome is that no secret is required, none is granted, there is no gap and no access request is raised. I rewrote the output file in full and kept the tool-result line the spine had appended.
-- Tools used: Skill (data-engineering-steps), mcp__hobasa-context__context_list, mcp__hobasa-context__context_get (feat.tasks, task.repo_access), Read (current task.secrets_scope.md), Grep (ap_pipeline checkout, secret-reference cross-check; not cited), Write (task.secrets_scope.md)
+- Approach: I read feat.tasks to find the Data Engineering tasks: TSK-01 and TSK-02, both in ap_pipeline. For each one I checked whether it needs any external access. Then I read every ap_pipeline file a secret could come from: CLAUDE.md, ci.py, and all source modules (__init__.py, ingest.py, transform.py, dq.py, pipeline.py, schedule.json). I also searched the checkout for credential patterns and found none. I compared what the tasks need with the permission-table tool view, which says nothing is required or granted. Since nothing is needed, there is no gap and no access request. I used no connector, because the inputs and the code answered the question. The scheduling runtime is not covered by the inputs, so I raised it as a non-blocking open question. Every claim cites only files I read in this session.
+- Tools used: Skill (data-engineering-steps), Read, Grep, Glob, Write
 - Helper subagents: none
 - Connector calls: none
 
@@ -39,15 +39,16 @@ no file changes in this step
 
 | Attempt | Session | Checks failed | Judge unsupported | Judge scores |
 |---|---|---|---|---|
-| 1 | new | 1 | 1 | {'correct': 5, 'complete': 4, 'grounded': 4, 'useful': 4} |
+| 1 | new | 1 | — | — |
 | 2 | resumed | 0 | 0 | {'correct': 5, 'complete': 4, 'grounded': 5, 'useful': 4} |
 
 ## Improvements the independent judge suggests (non-blocking, for the people at the gate)
 
-- The output cites journey:task.repo_access (P-1, P-5, P-7 and section 2) several times, but the DE-01 output is not among the files listed as read for this step. Its content does match those citations (the Databricks P-1 not-applicable finding, branch `feature/story`, `/usr/bin/python3 ci.py`, and 'no workspace credential to check'). Fetch it through context_get, or list it as read, so the read check counts the citation.
-- Section 2's row for the Integration (`dev`) and released (`main`) branches cites feat.tasks section 2. That section only names the branches. The 'none required or granted' part rests on tool:repo-access alone, which is scoped to the repository and not to each environment. Say plainly that the per-environment 'None' is inferred from the repository-wide tool view.
-- SS-1 says DE-02 'runs again on that re-entry trigger' if the release needs a feed credential. Say who raises that trigger, or list it as a non-blocking open question with an owner, so a future feed v3 (PQ-6) credential need is not lost.
-- The trailing '[Tool result] ... no secrets required or granted' lines are duplicated at the end of the file. If the agent wrote them rather than the harness, remove them.
+- Remove the leftover line at the end of the file (line 73: "[Tool result] [ap_pipeline] Tool registry: no secrets required or granted (permission table)"). It is raw tool output that ended up in the deliverable.
+- SSQ-1 names a step "DE-13" for scheduling, and no input mentions it. Either cite the workbook or brief that defines DE-13 as the scheduling step, or describe it generically (for example, "the scheduling step").
+- Section 3 maps branches to environments: feature branch to Development, `dev` to Integration, `main` to Production. ap_pipeline/CLAUDE.md only says "main (released), dev (integration)". Calling `main` "Production" is a reasonable reading, but it should be stated as an assumption.
+- Evidence item 4 says the transform and data-quality modules "import only `datetime`, `decimal` and `typing`". That is true of transform.py, but dq.py has no imports at all. Saying so per module would be more precise.
+- Section 5 uses "a Databricks workspace for scheduling" as an example re-entry trigger. Mark it clearly as hypothetical, because no input says ap_pipeline uses Databricks.
 
 Details: `result_attempt<N>.json` (claims with sources), `checks_attempt<N>.json`, `judge_attempt<N>.json`.
 

@@ -1,7 +1,7 @@
-Your previous result for this step was refused. Fix every point, rewrite the output files in full, and return the structured result again.
+Your previous result for this step was refused. Fix every point, rewrite the output files in full, and return the structured result again. The outputs describe the work itself: never mention earlier attempts, refusals or this review in them.
 
 ## Refusal reasons
-G1 judge found an unsupported statement: "SS-1 | ... Coding does not read the production feed, and this lane never reads source-system production data. | ... | feat.tasks (TSK-01 "Depends on"); record:b" (Neither cited source states the general rule that the lane 'never reads source-system production data'. feat.tasks only says to build on synthetic v3 rows, and )
+G2 claim cites file:ap_pipeline/CLAUDE.md but the agent never read that file in this session
 
 ## Step brief (unchanged except the attempt number)
 # Step DE-02: Access to secrets (attempt 2) for FEAT-ZD-48600
