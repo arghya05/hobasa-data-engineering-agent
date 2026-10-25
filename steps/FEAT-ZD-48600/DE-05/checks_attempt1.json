@@ -1,3 +1,5 @@
 {
-  "failures": []
+  "failures": [
+    "G2 claim cites mcp:codegraph but that connector was not used in this session"
+  ]
 }

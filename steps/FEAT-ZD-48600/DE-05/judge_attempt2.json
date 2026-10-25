@@ -1,16 +1,34 @@
 {
-  "unsupported": [],
+  "unsupported": [
+    {
+      "text": "The repository is on `feature/story` at `3fcbe1b` (task.components), and the baseline CI (`/usr/bin/python3 ci.py`) passed when it was run in this step.",
+      "why": "No source shows a CI run or its result for DE-05: none of the read files or tool views holds CI output. The step hook also blocks every shell command in DE-05 ('G9: step DE-05 may run only no shell commands'), so `ci.py` could not have run in this step. This is an invented test/CI result."
+    },
+    {
+      "text": "| Code read | `src/ap_pipeline/` (`ingest.py`, `transform.py`, `dq.py`, `pipeline.py`, `schedule.json`, `__init__.py`) | tool:repo; mcp:codegraph |",
+      "why": "This cites mcp:codegraph, but no saved codegraph response is among the sources the agent read. The previous attempt was refused for exactly this reason ('cites mcp:codegraph but that connector was not used'). The step also blocks shell commands, so `codegraph explore` could not have run. The citation does not support the claim."
+    },
+    {
+      "text": "Current behaviour that the new attribute builds on (tool:repo `transform.py`; mcp:codegraph):",
+      "why": "Same unsupported mcp:codegraph citation: no connector response is recorded. The facts that follow are supported by tool:repo only."
+    },
+    {
+      "text": "Inside the package, `to_model` is called only from `pipeline.run`, which feeds it the output of `parse_feed` and passes its result to `quality_report` (tool:repo `pipeline.py`; mcp:codegraph).",
+      "why": "Cites mcp:codegraph with no recorded codegraph call. The claim that `to_model` has no other caller inside the package (\"only\") is a caller-analysis claim. Here it rests on the unsupported connector citation rather than on the tool view of every module (which does happen to show no other caller)."
+    }
+  ],
   "improvements": [
-    "The brief says to run `/usr/bin/python3 ci.py` until it passes. The output says no code was changed, which matches the checkout: `src/ap_pipeline/` has no `paid_date` and no `delays.py`. It does not say outright that CI was not run in this step. One cited line saying so (record:brief; tool:repo) would answer the question that led to the attempt-1 refusal.",
-    "Section 2.4 cites record:memory D-2026-031 for `delay_days` being calendar days. D-2026-031 is about aging buckets. The calendar-day rule for `delay_days` comes from feat.design NF-2, so cite that as the main source and give D-2026-031 only as background.",
-    "DMQ-A (whether to register the Rejected-row reason and the Delay history structure org-wide) has no follow-up step. Name the step or person who would update org.data_model, so the gap is not left open for the DE coding step.",
-    "Section 4 lists the schema validation rules but does not map them to the planned test names in feat.design B1.5 (for example `test_invalid_paid_date_rejected`, `test_existing_reason_wins`). Adding the mapping would let the later unit-test step use it directly."
+    "Remove every mcp:codegraph citation (header table row 'Code read' and two places in section 5), or include the actual codegraph response. The tool:repo view already supports the code facts on its own.",
+    "Remove the claim that baseline CI ran and passed in this step. DE-05 allows no shell commands, and no CI output exists as a source.",
+    "Section 2 cites the JOURNEY requirement text ('optional paid_date column (ISO date, empty when unpaid)') as record:memory. That works because the hook bundles JOURNEY.md under the memory context, but naming JOURNEY.md explicitly would be clearer.",
+    "Citations to feat.design use 'journey:feat.design' alongside '(722a98f)'. Both are traceable (task.components line 11; JOURNEY row 9), so this is fine. Citing the section IDs exactly as the design numbers them (e.g. 'A1 Boundary \"Data\" row') would make checks faster.",
+    "DMQ-1 (baseline 'vendor (str, optional)' vs override 'vendor (str)') is a real conflict between org-level sources, and it is well raised. Consider naming who owns org.data_model rather than a 'proposed' role."
   ],
   "scores": {
-    "correct": 5,
-    "complete": 4,
-    "grounded": 5,
-    "useful": 4
+    "correct": 4,
+    "complete": 5,
+    "grounded": 3,
+    "useful": 5
   },
-  "notes": "Attempt 2 removes the unsupported CI claim (`tool:ci`, 3 tests, coverage 100.0) that got attempt 1 refused, and adds no new run, count or coverage figure. I checked every statement against the inputs and the other sources:\n- org.data_model: the Invoice fields, including `paid_date` (date or None, added in feed v3).\n- task.components: IN-1 to IN-6, TC-1, TC-2, the rules carried for coding, and sections 3 and 5.\n- feat.design: DC-1, DC-2, B1.2 to B1.5, DD-6 and DD-7 (both still marked pending), NF-2, NF-4, B3.3 and DQ-4.\n- tool:repo: the `transform.py` docstring and code, `dq.py`, the test header and version 0.4.0.\n- record:memory: D-2026-044 and L-011.\n- The journey board: DES-02 approved by the Architect and UX lead.\n\nAll of them support the output. The statement that the step changed no code matches the checkout: Glob and Grep show `src/ap_pipeline/` has no `paid_date` and no `delays.py`. The output does what the workbook asks. It sets out the v2 to v3 source contract, confirms each Invoice field, adds the `paid_date` reject reason and the derived Delay history structure, lists the new knowledge-graph relations, and covers compatibility and schema validation rules. Its open questions correctly point back to CQ-I1, OQ-B6 and DQ-4. I found no hallucinations."
+  "notes": "I checked the output against task.components, the org.data_model override, the org baseline data model, the ap_pipeline README, the tool view of src/ap_pipeline, feat.design (A1, A3 DC-1/DC-2, A5 NF-4, A7 DD-6/7/8/10, B1.1\u2013B1.4, B3.3), the memory/JOURNEY hook context and the data-engineering-steps skill (DE-06 Data Mapping reads feat.data_model_change).\n\nThe substance of the data model change is accurate and well traced: Invoice gains paid_date (date or None), there is a new reject reason 'paid_date', and the in-memory delay history (DC-2) is described correctly, as are feed v2 compatibility, the precedence rule (DD-6), the unpaid-with-date interim (DD-7), schedule unchanged, Decimal kept, and the DE-06 handover mapping.\n\nThe output has two grounding defects. First, it repeats the mcp:codegraph citation, which was the stated reason for the previous refusal, and there is still no recorded codegraph use. Second, it invents a CI result ('baseline CI ... passed when it was run in this step'), although DE-05's hook blocks all shell commands. Both must be removed before approval."
 }

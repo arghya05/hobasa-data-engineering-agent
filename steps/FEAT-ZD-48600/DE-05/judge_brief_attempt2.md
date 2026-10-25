@@ -11,22 +11,30 @@
 - org.data_model: `hobasa-data-engineering-agent/inputs/FEAT-ZD-48600/DE-05/org.data_model.md`
 
 ## Other GitHub files the agent read (valid sources when cited as file:<repository>/<path>)
-- `~/.claude/projects/-Users-arghyamukherjee-Documents-automaiton-final-document-e2e-run-runs-run-20261025-123936-feat-zd-48600-workspace-ap-pipeline/ab9fb8c5-593e-4109-91bc-e25655d252b7/tool-results/hook-3c9518d7-ee57-471d-840b-af8e756c5bc4-1-additionalContext.txt`
-- `hobasa-data-engineering-agent/outputs/FEAT-ZD-48600/feat.data_model_change.md`
+- `~/.claude/projects/-Users-arghyamukherjee-Documents-automaiton-final-document-e2e-run-runs-run-20261025-205213-feat-zd-48600-workspace-ap-pipeline/90c15947-4f89-4cdd-8af8-c89816475ca9/tool-results/hook-1cf8f1f6-3de6-4e6f-9a0b-731a43afa3c9-1-additionalContext.txt`
+- `hobasa-data-engineering-agent/.claude/skills/data-engineering-steps/SKILL.md`
+- `hobasa-data-engineering-agent/CLAUDE.md`
 - `hobasa-design-agent/outputs/FEAT-ZD-48600/feat.design.md`
-- `ap-pipeline-sample/src/ap_pipeline/__init__.py`
-- `ap-pipeline-sample/src/ap_pipeline/dq.py`
-- `ap-pipeline-sample/src/ap_pipeline/transform.py`
-- `ap-pipeline-sample/tests/test_pipeline.py`
+- `ap-aging-sample/CLAUDE.md`
+- `ap-forecast-sample/CLAUDE.md`
+- `ap-pipeline-sample/CLAUDE.md`
+- `ap-pipeline-sample/README.md`
+- `ap-portal-sample/CLAUDE.md`
+- `hobasa-agentic-sdlc/CLAUDE.md`
+- `hobasa-agentic-sdlc/features/FEAT-ZD-48600/JOURNEY.md`
+- `hobasa-agentic-sdlc/memory/MEMORY.md`
+- `hobasa-agentic-sdlc/org/org.data_model.md`
+- `final_document/hobasa-claude-code-plugin/skills/data-engineering-steps/SKILL.md`
+- `final_document/hobasa-claude-code-plugin/skills/grounded-output/SKILL.md`
 
 Shared memory and conventions: `memory/MEMORY.md` and `CLAUDE.md` in the SDLC repository.
 
 ## The step brief the agent was given (a valid source, cited as record:brief)
 
-Your previous result for this step was refused. Fix every point, rewrite the output files in full, and return the structured result again.
+Your previous result for this step was refused. Fix every point, rewrite the output files in full, and return the structured result again. The outputs describe the work itself: never mention earlier attempts, refusals or this review in them.
 
 ## Refusal reasons
-G1 judge found an unsupported statement: "CI on the unchanged `feature/story` branch passed (`/usr/bin/python3 ci.py`: 3 tests run, 0 failures, coverage 100.0) (tool:ci)." (The brief supplies no `tool:ci` view; its only tool view is tool:repo. No input, tool view or file the agent read reports a CI run, a failure count or a coverag)
+G2 claim cites mcp:codegraph but that connector was not used in this session
 
 ## Step brief (unchanged except the attempt number)
 # Step DE-05: Data Model Changes (attempt 2) for FEAT-ZD-48600
@@ -38,17 +46,17 @@ G1 judge found an unsupported statement: "CI on the unchanged `feature/story` br
 - Gate (who approves this output): no gate: automated checks, the independent judge and sampled human evaluation
 
 ## Inputs (GitHub checkout; read them with Read, or context_get for a receipt)
-- task.components (Components, layers, sources or pipelines to change): `hobasa-data-engineering-agent/inputs/FEAT-ZD-48600/DE-05/task.components.md` (from hobasa-data-engineering-agent/outputs/FEAT-ZD-48600/task.components.md at commit a126bc4)
-- org.data_model (Data Model and Knowledge Graph): `hobasa-data-engineering-agent/inputs/FEAT-ZD-48600/DE-05/org.data_model.md` (from hobasa-agentic-sdlc/features/FEAT-ZD-48600/org-overrides/org.data_model.md at commit a6b3e2a)
+- task.components (Components, layers, sources or pipelines to change): `hobasa-data-engineering-agent/inputs/FEAT-ZD-48600/DE-05/task.components.md` (from hobasa-data-engineering-agent/outputs/FEAT-ZD-48600/task.components.md at commit d5b07b0)
+- org.data_model (Data Model and Knowledge Graph): `hobasa-data-engineering-agent/inputs/FEAT-ZD-48600/DE-05/org.data_model.md` (from hobasa-agentic-sdlc/features/FEAT-ZD-48600/org-overrides/org.data_model.md at commit e8afce8)
 
 ## Outputs (write each file in full; the spine commits and pushes after evaluation and approval)
 - feat.data_model_change (Data Model change for the feature): write `hobasa-data-engineering-agent/outputs/FEAT-ZD-48600/feat.data_model_change.md`
 
 ## Code
-Work in repository `ap-pipeline-sample` (Python 3.9 (standard library)). You may change only: src/ap_pipeline/. Run the CI yourself with `/usr/bin/python3 ci.py` from the repository root (or delegate to the ci-runner subagent) until it passes. Do not commit or push; the spine does.
+Work in repository `ap-pipeline-sample` (Python 3.9 (standard library)). You may change only: src/ap_pipeline/. Understand before you change: the repository is indexed with CodeGraph. Before editing, use it (MCP tools codegraph_explore and codegraph_node with projectPath `ap-pipeline-sample`, or `codegraph explore <symbols>`, `codegraph impact <symbol>`, `codegraph callers <symbol>`) to read the exact source of what you change, its callers and callees and the blast radius. After editing, run `codegraph sync` and `codegraph affected <changed files>` to find the tests your change touches, and run them through the CI. Shell commands allowed in this step: `/usr/bin/python3 ci.py`, `git status`, `git diff`, `git log`, `codegraph explore`, `codegraph node`, `codegraph callers`, `codegraph callees`, `codegraph impact`, `codegraph affected`, `codegraph query`, `codegraph files`, `codegraph status`, `codegraph sync`. Run the CI yourself with `/usr/bin/python3 ci.py` from the repository root (or delegate to the ci-runner subagent) until it passes. Do not commit or push; the spine does.
 
 ## How to work
-Decide the best way to do this step from the inputs and the workbook action, plan it (TodoWrite for multi-part work), then do it. Helper subagents you can delegate to: explorer, verifier, ci-runner (use the verifier before you finish when the output makes many factual statements). Use the shared memory (memory_search) for decisions and lessons. Connectors approved for you: api:osv (Known vulnerabilities for a dependency version (POST /v1/query with {"package":{"name":...,"ecosystem":"PyPI|npm"},"version":...})), api:pypi (Python package metadata: latest version, licence, release dates (GET /pypi/<package>/json)). Use one only when your inputs do not hold what you need; request a missing one with capability_request. You may also read any other file in the GitHub checkouts your step needs (for example other requirements when grouping, or code); cite it as file:<repository>/<path>.
+Decide the best way to do this step from the inputs and the workbook action, plan it (TodoWrite for multi-part work), then do it. Helper subagents you can delegate to: explorer, verifier, ci-runner (use the verifier before you finish when the output makes many factual statements). Use the shared memory (memory_search) for decisions and lessons. Connectors approved for you: api:osv (Known vulnerabilities for a dependency version (POST /v1/query with {"package":{"name":...,"ecosystem":"PyPI|npm"},"version":...})), api:pypi (Python package metadata: latest version, licence, release dates (GET /pypi/<package>/json)), mcp:codegraph (Code intelligence over the repository: a symbol's source, its callers and callees, the blast radius of a change and the tests it affects (codegraph_explore, codegraph_node and related tools; pass projectPath = the repository checkout)). Use one only when your inputs do not hold what you need; request a missing one with capability_request. You may also read any other file in the GitHub checkouts your step needs (for example other requirements when grouping, or code); cite it as file:<repository>/<path>.
 
 ## Tool view (cite as tool:repo)
 --- ap_pipeline/src/ap_pipeline/__init__.py ---
@@ -139,4 +147,4 @@ if __name__ == "__main__":
     unittest.main()
 
 
-Finish with the structured result: approach, tools_used, claims (each citing an input item name, a tool view, api:<name>, mcp:<server>, file:<repository>/<path> for any other GitHub file you read, record:intake, record:owner_answer, record:memory or record:brief for this brief; a claim drawing on several sources lists them separated by ';'; every number must appear in what you cite), open questions (BLOCKING: only when you cannot finish), summary.
+Finish with the structured result: approach, tools_used, claims (each citing an input item name, a tool view, api:<name>, mcp:<server>, file:<repository>/<path> for any other GitHub file you read, record:intake, record:owner_answer, record:memory or record:brief for this brief; a claim drawing on several sources lists them separated by ';'; every number must appear in what you cite), open questions (anything missing or unclear: BLOCKING: <what you need and who should answer>; never assume), summary.
