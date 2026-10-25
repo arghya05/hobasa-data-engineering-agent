@@ -1,21 +1,16 @@
 {
-  "unsupported": [
-    {
-      "text": "SS-1 | ... Coding does not read the production feed, and this lane never reads source-system production data. | ... | feat.tasks (TSK-01 \"Depends on\"); record:brief",
-      "why": "Neither cited source states the general rule that the lane 'never reads source-system production data'. feat.tasks only says to build on synthetic v3 rows, and the brief says nothing about production data. The rule appears in the agent's own definition (.claude/agents/data-engineering.md: 'synthetic data only; never source-system production data'), which is not cited. The citation therefore does not support this statement."
-    }
-  ],
+  "unsupported": [],
   "improvements": [
-    "SS-2 describes DE-13 as 'scheduling' and DE-14 as 'pipeline status notifications by email and Teams' and cites record:brief, but the brief does not mention either step. The descriptions match the data-engineering-steps skill (DE-13 'Scheduling the pipelines', DE-14 'Notifications in email and teams'). Cite that skill file, or file:<repo>/<path>, instead. This is not blocking because SS-2 is framed as a risk ('may need').",
-    "Section 2 counts the `dev` and `main` branches as 'environments'. No source defines deployment environments for ap_pipeline. Say that this is the agent's reading and that the tool view is repository-wide.",
-    "The tool view reports permissions for the whole repository, not for the agent identity in each environment. Add a short note that granted access per environment was taken from that one repository-level line.",
-    "The Result row cites feat.tasks for 'no access request is needed'. The decisive source is tool:repo-access. feat.tasks only supports the conclusion that the tasks touch no external systems, which is fine but should be kept separate."
+    "Section 3 splits the result into three environments: Development (`feature/<story>`, local CI), Integration (`dev`) and Production (`main`). The tool view gives one repository-level result ('no secrets required or granted'), not one per environment. ap_pipeline/CLAUDE.md calls `main` 'released', not 'Production'. The agent should say that this per-environment mapping is its own reading of the branch names.",
+    "Evidence item 8 cites 'file:ap_pipeline, Grep over the repository'. That is not a valid file:<repository>/<path> citation. A tool or record citation would be better, along with the list of searched paths, including tests/. I re-ran the search over the whole checkout and confirmed there are no matches.",
+    "The output describes `tests/` only through TSK-01 and TSK-02. One line confirming that the existing tests use no fixtures, network or credentials would make the coding-environment conclusion complete.",
+    "SSQ-1 rightly hands the scheduling-runtime credential question to DE-13. It could also name the reverse trigger: if DE-13 or a deployment step brings in a scheduling workspace or a production feed source, DE-02 must run again, as the step's re-entry trigger requires."
   ],
   "scores": {
     "correct": 5,
     "complete": 4,
-    "grounded": 4,
+    "grounded": 5,
     "useful": 4
   },
-  "notes": "I checked every statement against feat.tasks (b0fd4d2), the step brief, the tool view ('no secrets are required or granted for this repository (permission table)') and the approved DE-01 output journey:task.repo_access. The following are supported:\n- Task scopes: TSK-01 changes transform.py/to_model with paid_date; its must-not-change list includes ingest.py, pipeline.py and schedule.json; it builds on synthetic v3 rows. TSK-02 adds a pure delays.py with no I/O.\n- Python 3.9 standard library only (DD-1).\n- Databricks is not applicable, and P-1 found no workspace credential.\n- Branch feature/story and the CI command /usr/bin/python3 ci.py (P-5, P-7).\n- PQ-6 gates release of TSK-01.\n- org.permission_table is handled by reference only.\n- The conclusion: no secrets are required or granted, there is no gap, and no request is needed.\n\nThere is one citation mismatch. In SS-1 the 'never reads source-system production data' rule is true according to the agent's own definition file, but it is attributed to sources that do not state it. SS-2 has a similar mismatch, but it is framed as a risk, so it is listed under improvements. The output does meet the workbook outcome: it shows clearly that ap_pipeline needs no secrets and that no access request is needed."
+  "notes": "I checked every factual statement against feat.tasks, the ap_pipeline sources, the brief/tool view and SKILL.md. The sources were CLAUDE.md, ci.py, __init__.py, dq.py, ingest.py, pipeline.py, schedule.json and transform.py. Specific results:\n- transform.py imports only datetime, decimal and typing.\n- dq.py imports nothing.\n- ingest.py uses only csv, io and typing.\n- pipeline.run(csv_text) calls parse_feed, to_model and quality_report.\n- __version__ is \"0.4.0\".\n- COVERAGE_MIN = 90.0, and ci.py reads no environment variable and makes no network call.\n- schedule.json holds daily / 02:00 / Asia/Kolkata.\n- The CI command is `/usr/bin/python3 ci.py`.\n- The branches are main, dev and feature/<story>.\n- TSK-01's 'Must not change' list includes ingest.py, pipeline.py and schedule.json.\n- TSK-02 says 'No I/O'.\n- TSK-06 says a transport layer would re-trigger DES-01.\n- DE-13 'Scheduling the pipelines' exists in SKILL.md.\n- I re-ran the agent's keyword Grep (secret, token, password, api_key, environ, getenv, credential) over ap_pipeline: no matches.\n- The conclusion (none required, none granted, no gap, no access request) matches the tool view.\nI found no hallucinations. The step outcome, a secrets scope with permissions confirmed, is met for the two DE tasks."
 }

@@ -9,8 +9,31 @@
 ## Inputs the agent was given
 - feat.tasks: `hobasa-data-engineering-agent/inputs/FEAT-ZD-48600/DE-02/feat.tasks.md`
 
+## Tool results the spine recorded from the real tools in this step (a valid source; the section 'Tool results' at the end of an output file is written by the spine, not the agent)
+
+
+[Tool result] [ap_pipeline] Tool registry: no secrets required or granted (permission table)
+
 ## Other GitHub files the agent read (valid sources when cited as file:<repository>/<path>)
-- `~/.claude/projects/-Users-arghyamukherjee-Documents-automaiton-final-document-e2e-run-runs-run-20261025-123936-feat-zd-48600-workspace-ap-pipeline/0796d890-3980-470b-a3b7-ed23c05133a9/tool-results/hook-12c148e0-05f1-4871-972a-9cc8942c56a6-1-additionalContext.txt`
+- `hobasa-data-engineering-agent/.claude/skills/data-engineering-steps/SKILL.md`
+- `hobasa-data-engineering-agent/CLAUDE.md`
+- `hobasa-data-engineering-agent/outputs/FEAT-ZD-48600/task.secrets_scope.md`
+- `ap-aging-sample/CLAUDE.md`
+- `ap-forecast-sample/CLAUDE.md`
+- `ap-pipeline-sample/CLAUDE.md`
+- `ap-pipeline-sample/ci.py`
+- `ap-pipeline-sample/src/ap_pipeline/__init__.py`
+- `ap-pipeline-sample/src/ap_pipeline/dq.py`
+- `ap-pipeline-sample/src/ap_pipeline/ingest.py`
+- `ap-pipeline-sample/src/ap_pipeline/pipeline.py`
+- `ap-pipeline-sample/src/ap_pipeline/schedule.json`
+- `ap-pipeline-sample/src/ap_pipeline/transform.py`
+- `ap-portal-sample/CLAUDE.md`
+- `hobasa-agentic-sdlc/CLAUDE.md`
+- `hobasa-agentic-sdlc/features/FEAT-ZD-48600/JOURNEY.md`
+- `hobasa-agentic-sdlc/memory/MEMORY.md`
+- `final_document/hobasa-claude-code-plugin/skills/data-engineering-steps/SKILL.md`
+- `final_document/hobasa-claude-code-plugin/skills/grounded-output/SKILL.md`
 
 Shared memory and conventions: `memory/MEMORY.md` and `CLAUDE.md` in the SDLC repository.
 
@@ -25,7 +48,7 @@ Shared memory and conventions: `memory/MEMORY.md` and `CLAUDE.md` in the SDLC re
 - Gate (who approves this output): no gate: automated checks, the independent judge and sampled human evaluation
 
 ## Inputs (GitHub checkout; read them with Read, or context_get for a receipt)
-- feat.tasks (Engineering tasks with goal, AC, dependencies and size budget): `hobasa-data-engineering-agent/inputs/FEAT-ZD-48600/DE-02/feat.tasks.md` (from hobasa-design-agent/outputs/FEAT-ZD-48600/feat.tasks.md at commit b0fd4d2)
+- feat.tasks (Engineering tasks with goal, AC, dependencies and size budget): `hobasa-data-engineering-agent/inputs/FEAT-ZD-48600/DE-02/feat.tasks.md` (from final_document/e2e-run/runs/run-20261025-123936-feat-zd-48600/workspace/agents/hobasa-design-agent/outputs/FEAT-ZD-48600/feat.tasks.md at commit b0fd4d2)
 - org.permission_table (Allowed tools, secrets and data per agent): restricted, passed by reference only
 
 ## Outputs (write each file in full; the spine commits and pushes after evaluation and approval)
