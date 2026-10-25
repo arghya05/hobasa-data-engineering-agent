@@ -15,16 +15,20 @@
 [Tool result] [ap_pipeline] Tool registry: no secrets required or granted (permission table)
 
 ## Other GitHub files the agent read (valid sources when cited as file:<repository>/<path>)
-- `~/.claude/projects/-Users-arghyamukherjee-Documents-automaiton-final-document-e2e-run-runs-run-20261025-204047-feat-zd-48600-workspace-ap-pipeline/b2f622d3-1fdc-4c67-8ca6-7a25e947cf94/tool-results/hook-57a43b13-2160-4d8e-aad4-fa5b6ea2b8a5-1-additionalContext.txt`
+- `~/.claude/projects/-Users-arghyamukherjee-Documents-automaiton-final-document-e2e-run-runs-run-20261025-205213-feat-zd-48600-workspace-ap-pipeline/9717b560-f46b-4b46-8e0c-996d03012ecc/tool-results/hook-3212d5b1-5bbd-46d3-9ba9-4460c0b83241-1-additionalContext.txt`
 - `hobasa-data-engineering-agent/.claude/skills/data-engineering-steps/SKILL.md`
 - `hobasa-data-engineering-agent/CLAUDE.md`
-- `hobasa-data-engineering-agent/outputs/FEAT-ZD-48600/task.secrets_scope.md`
+- `hobasa-design-agent/outputs/FEAT-ZD-48600/feat.clarifications.md`
+- `hobasa-design-agent/outputs/FEAT-ZD-48600/feat.design.md`
 - `ap-aging-sample/CLAUDE.md`
 - `ap-forecast-sample/CLAUDE.md`
 - `ap-pipeline-sample/CLAUDE.md`
+- `ap-pipeline-sample/ci.py`
+- `ap-pipeline-sample/src/ap_pipeline/dq.py`
 - `ap-pipeline-sample/src/ap_pipeline/ingest.py`
 - `ap-pipeline-sample/src/ap_pipeline/pipeline.py`
 - `ap-pipeline-sample/src/ap_pipeline/schedule.json`
+- `ap-pipeline-sample/src/ap_pipeline/transform.py`
 - `ap-portal-sample/CLAUDE.md`
 - `hobasa-agentic-sdlc/CLAUDE.md`
 - `hobasa-agentic-sdlc/features/FEAT-ZD-48600/JOURNEY.md`
@@ -39,7 +43,8 @@ Shared memory and conventions: `memory/MEMORY.md` and `CLAUDE.md` in the SDLC re
 Your previous result for this step was refused. Fix every point, rewrite the output files in full, and return the structured result again. The outputs describe the work itself: never mention earlier attempts, refusals or this review in them.
 
 ## Refusal reasons
-G1 judge found an unsupported statement: "TSK-03 to TSK-08 belong to other lanes: Data Science, Backend, Frontend and the Testing Agent. Each of those lanes runs its own secrets step (feat.tasks, sectio" (feat.tasks section 1 assigns TSK-03 to TSK-08 to the Data Science, Backend, Frontend and Testing Agent lanes, which is correct. It says nothing about secrets st)
+G2 claim cites journey:feat.design but the agent never read hobasa-design-agent/outputs/FEAT-ZD-48600/feat.design.md
+G2 claim cites journey:feat.clarifications but the agent never read hobasa-design-agent/outputs/FEAT-ZD-48600/feat.clarifications.md
 
 ## Step brief (unchanged except the attempt number)
 # Step DE-02: Access to secrets (attempt 2) for FEAT-ZD-48600
@@ -64,4 +69,4 @@ Decide the best way to do this step from the inputs and the workbook action, pla
 ## Tool view (cite as tool:repo-access)
 Tool registry for ap_pipeline: no secrets are required or granted for this repository (permission table).
 
-Finish with the structured result: approach, tools_used, claims (each citing an input item name, a tool view, api:<name>, mcp:<server>, file:<repository>/<path> for any other GitHub file you read, record:intake, record:owner_answer, record:memory or record:brief for this brief; a claim drawing on several sources lists them separated by ';'; every number must appear in what you cite), open questions (BLOCKING: only when you cannot finish), summary.
+Finish with the structured result: approach, tools_used, claims (each citing an input item name, a tool view, api:<name>, mcp:<server>, file:<repository>/<path> for any other GitHub file you read, record:intake, record:owner_answer, record:memory or record:brief for this brief; a claim drawing on several sources lists them separated by ';'; every number must appear in what you cite), open questions (anything missing or unclear: BLOCKING: <what you need and who should answer>; never assume), summary.

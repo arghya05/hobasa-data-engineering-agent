@@ -1,16 +1,25 @@
 {
-  "unsupported": [],
+  "unsupported": [
+    {
+      "text": "task.repo_access (DE-01, revision 177b1da)",
+      "why": "No source states the revision hash 177b1da. It appears nowhere in the workspace except this output: not in JOURNEY.md, the hook context, feat.tasks or the brief. The agent also never read task.repo_access, which is not in the list of files it read. The other two revisions (722a98f, 36d4dac) do appear in feat.tasks line 16."
+    },
+    {
+      "text": "| Databricks or other workspace | Not used by this lane, so no workspace credential is needed | journey:task.repo_access (section 1) |",
+      "why": "The cited source does not support the claim. JOURNEY.md (row 15, DE-01) does not say that Databricks is unused for ap_pipeline; its summary only lists the files DE-01 read. The agent never read task.repo_access, so it cannot cite that file's 'section 1'. The fact itself is true: task.repo_access line 18 says it, and a case-insensitive search of ap_pipeline for 'databricks' finds nothing. But the citation given does not back it."
+    }
+  ],
   "improvements": [
-    "Section 3, the keyword-search bullet: the claim covers the whole ap_pipeline checkout, but the citation lists only ingest.py, pipeline.py and schedule.json. A re-run of the search confirms no matches. Still, the bullet should also cite the other files it searched (transform.py, dq.py, __init__.py, ci.py, tests/test_pipeline.py, data/sample_feed.csv), or name the search as the evidence.",
-    "Section 2, the note after the table: TSK-08 is a cross-repository harness that calls ap_pipeline's `pipeline.run` and `delays_by_vendor`, and its location is still open (TKQ-3). Calling it 'outside ap_pipeline' is loose. It would be clearer to say it belongs to the Testing Agent lane, not to the Data Engineering lane.",
-    "The evidence for 'no secrets needed' comes from ingest.py and pipeline.py, which neither task changes. transform.py, the file TSK-01 changes, is not cited. Citing it, and stating that ci.py and the test run need no credential, would make the CI/feature-branch row stronger.",
-    "The file could say directly that the step outcome ('Secrets are available with access permissions') is met trivially because the required set is empty. That makes the result easy to see at the gate."
+    "Cite the Databricks/workspace row to a source the agent actually read and that states the fact. The best option is the agent's own search of ap_pipeline (file:ap_pipeline/...), which found no 'databricks' or 'dbutils'. Otherwise the agent should read and cite task.repo_access. A journey row that does not say it is not a valid citation.",
+    "Remove the invented revision for task.repo_access, or read the DE-01 output and cite where its revision is recorded.",
+    "The design facts NF-10, SE-4 and the schedule (daily, 02:00, Asia/Kolkata) are cited as journey:feat.design, and CL-X9 as journey:feat.clarifications. The agent read these files, and the content matches feat.design lines 135, 146 and 187 and feat.clarifications line 48. Citing them as the files with section and line anchors would be cleaner than 'journey:'.",
+    "Section 3 (Environments) concludes that the scope is 'none' for every branch and environment. That is reasonable, but the open-question table could also note that no input names deployment environments for ap_pipeline at all. The question of which environments DE-02 must cover could then be confirmed by the data engineer, rather than settled by inference."
   ],
   "scores": {
-    "correct": 5,
+    "correct": 4,
     "complete": 4,
-    "grounded": 5,
+    "grounded": 3,
     "useful": 4
   },
-  "notes": "I checked every statement against the sources: feat.tasks (TSK-01 and TSK-02 rows and details, section 1 lane assignments, section 2 branch convention, introduction on DD-1), the tool view (no secrets required or granted for ap_pipeline), and ap_pipeline's ingest.py, pipeline.py, schedule.json (daily, 02:00, Asia/Kolkata) and CLAUDE.md (Python 3.9, `/usr/bin/python3 ci.py`, branches main/dev/feature/<story>). I found no unsupported statements. The earlier refusal point, a claim that the other lanes each run their own secrets step, has been removed. The note now only restates the lane assignment, which section 1 supports. I re-ran the case-insensitive keyword search over the ap_pipeline checkout and it returned no matches, which confirms the claim. The file marks its inferences as such: no production data means no source-system credential, and the scope is set per branch because no deployment environments are named. Open questions SQ-DE-1 and SQ-DE-2 are framed as non-blocking questions, not facts. The output meets the step action: it compares required against granted secrets, finds no gap and raises no request."
+  "notes": "I checked the claims against feat.tasks, the tool view, feat.design, feat.clarifications, JOURNEY.md, the DE skill and the ap_pipeline code. These checks passed:\n- Tool view: 'no secrets required or granted' matches.\n- A case-insensitive search of the ap_pipeline checkout for the listed patterns finds no match. I confirmed this with Grep.\n- pipeline.run(csv_text) calls parse_feed, then to_model, then quality_report.\n- ci.py runs compile, tests, coverage of at least 90% and static checks, and reads no environment variable.\n- schedule.json is daily, 02:00, Asia/Kolkata. feat.design B1.1 says it does not change.\n- The TSK-01 and TSK-02 file budgets and 'No I/O' match feat.tasks.\n- NF-10, SE-4 and CL-X9 are quoted accurately.\n- DE-13 is 'Scheduling the pipelines' in the DE skill.\n- Revisions 722a98f and 36d4dac appear in feat.tasks.\n\nTwo citation problems block the output: the invented hash 177b1da, and the Databricks row cited to a journey/task.repo_access source that does not state the fact or was not read. The substance of the result is right and matches the workbook outcome: no secrets are needed or granted, so no access request is raised. The scheduler-credential open question is sensibly non-blocking, with a re-entry trigger."
 }

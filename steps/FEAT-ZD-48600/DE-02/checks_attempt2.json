@@ -1,3 +1,6 @@
 {
-  "failures": []
+  "failures": [
+    "G1 judge found an unsupported statement: \"task.repo_access (DE-01, revision 177b1da)\" (No source states the revision hash 177b1da. It appears nowhere in the workspace except this output: not in JOURNEY.md, the hook context, feat.tasks or the brief)",
+    "G1 judge found an unsupported statement: \"| Databricks or other workspace | Not used by this lane, so no workspace credential is needed | journey:task.repo_access (section 1) |\" (The cited source does not support the claim. JOURNEY.md (row 15, DE-01) does not say that Databricks is unused for ap_pipeline; its summary only lists the files)"
+  ]
 }

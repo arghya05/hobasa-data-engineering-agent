@@ -1,7 +1,8 @@
 Your previous result for this step was refused. Fix every point, rewrite the output files in full, and return the structured result again. The outputs describe the work itself: never mention earlier attempts, refusals or this review in them.
 
 ## Refusal reasons
-G1 judge found an unsupported statement: "TSK-03 to TSK-08 belong to other lanes: Data Science, Backend, Frontend and the Testing Agent. Each of those lanes runs its own secrets step (feat.tasks, sectio" (feat.tasks section 1 assigns TSK-03 to TSK-08 to the Data Science, Backend, Frontend and Testing Agent lanes, which is correct. It says nothing about secrets st)
+G2 claim cites journey:feat.design but the agent never read hobasa-design-agent/outputs/FEAT-ZD-48600/feat.design.md
+G2 claim cites journey:feat.clarifications but the agent never read hobasa-design-agent/outputs/FEAT-ZD-48600/feat.clarifications.md
 
 ## Step brief (unchanged except the attempt number)
 # Step DE-02: Access to secrets (attempt 2) for FEAT-ZD-48600
@@ -26,4 +27,4 @@ Decide the best way to do this step from the inputs and the workbook action, pla
 ## Tool view (cite as tool:repo-access)
 Tool registry for ap_pipeline: no secrets are required or granted for this repository (permission table).
 
-Finish with the structured result: approach, tools_used, claims (each citing an input item name, a tool view, api:<name>, mcp:<server>, file:<repository>/<path> for any other GitHub file you read, record:intake, record:owner_answer, record:memory or record:brief for this brief; a claim drawing on several sources lists them separated by ';'; every number must appear in what you cite), open questions (BLOCKING: only when you cannot finish), summary.
+Finish with the structured result: approach, tools_used, claims (each citing an input item name, a tool view, api:<name>, mcp:<server>, file:<repository>/<path> for any other GitHub file you read, record:intake, record:owner_answer, record:memory or record:brief for this brief; a claim drawing on several sources lists them separated by ';'; every number must appear in what you cite), open questions (anything missing or unclear: BLOCKING: <what you need and who should answer>; never assume), summary.
