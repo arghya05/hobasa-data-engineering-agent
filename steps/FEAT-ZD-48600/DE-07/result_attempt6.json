@@ -1,0 +1,27 @@
+{
+  "structured": {
+    "approach": "",
+    "tools_used": [],
+    "claims": [],
+    "open_questions": [],
+    "summary": "API Error: Your computer went to sleep mid-response. The response above may be incomplete."
+  },
+  "meta": {
+    "subtype": "success",
+    "is_error": true,
+    "num_turns": 15,
+    "session_id": "b10d0839-c8eb-4e58-b9df-b191669b6165",
+    "total_cost_usd": 0.7035554,
+    "permission_denials": [
+      {
+        "tool_name": "Bash",
+        "tool_use_id": "toolu_01VFaJ8eB3XajGFYyKvgH1D1",
+        "tool_input": {
+          "command": "cd run/workspace; ls ap_pipeline ap_pipeline/src/ap_pipeline ap_pipeline/data ap_pipeline/tests; cat ap_pipeline/ci.py | head -40; ls agents/hobasa-data-engineering-agent/outputs/FEAT-ZD-48600/; git -C ap_pipeline log --oneline -3; git -C agents/hobasa-data-engineering-agent log --oneline -8 2>/dev/null",
+          "description": "List repo files, outputs and recent commits"
+        }
+      }
+    ],
+    "result": "API Error: Your computer went to sleep mid-response. The response above may be incomplete."
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "structured": {
+    "approach": "",
+    "tools_used": [],
+    "claims": [],
+    "open_questions": [],
+    "summary": "Error: Session ID 8022f571-5ef1-4f25-8424-ace9cefd7242 is already in use.\n"
+  },
+  "meta": {
+    "subtype": "no_json",
+    "is_error": true,
+    "num_turns": null,
+    "session_id": null,
+    "total_cost_usd": null,
+    "permission_denials": null,
+    "result": "Error: Session ID 8022f571-5ef1-4f25-8424-ace9cefd7242 is already in use.\n"
+  }
+}

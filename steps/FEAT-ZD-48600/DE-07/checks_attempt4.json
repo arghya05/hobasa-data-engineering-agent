@@ -1,0 +1,5 @@
+{
+  "failures": [
+    "Claude Code session ended no_json: Error: Session ID 3879634d-9e1e-4ffc-813d-657d1d41c150 is already in use.\n"
+  ]
+}

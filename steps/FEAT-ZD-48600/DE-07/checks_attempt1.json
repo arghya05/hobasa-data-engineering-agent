@@ -1,5 +1,5 @@
 {
   "failures": [
-    "G2 claim cites file:ap_pipeline/CLAUDE.md but the agent never read that file in this session"
+    "Claude Code session ended no_json: Error: Session ID b340443d-9c81-47da-923a-bcccad9b4d93 is already in use.\n"
   ]
 }

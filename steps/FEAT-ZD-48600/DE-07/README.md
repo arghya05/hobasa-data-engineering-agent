@@ -1,62 +1,62 @@
-# DE-07 Identify the sources/pipelines to be changed (Transformation) ⁵ (Data Engineering agent)
+# DE-07 · Identify the sources/pipelines to be changed (Transformation) ⁵
 
-**Item:** FEAT-ZD-48600 · **status:** done
-**Trigger:** Previous outcome  
-**Action:** Read the existing sources, pipelines and understand it.
+**Agent:** Data Engineering · **Item:** FEAT-ZD-48600 · **Status:** ⛔ blocked
+**Approved by:** automated checks and the independent judge
+
+**What this step does:** Read the existing sources, pipelines and understand it.
 Identify the sources or pipelines that needs to be created/updated with minimum lines of code for the Transformation pipeline
-Access for the secrets in all the environments  
-**Outcome expected:** The list of sources, pipelines needs to be created/updated with minimum lines of code for the transformation pipeline
+Access for the secrets in all the environments
 
-## Inputs (what the agent was given)
+**Expected outcome:** The list of sources, pipelines needs to be created/updated with minimum lines of code for the transformation pipeline
 
-| Item | Prepared input (this repository) | Read from (producer in GitHub) | Commit | Produced by |
+**Started by:** Previous outcome
+
+## Input: what the agent received
+
+| # | Input | What it is | Produced by | Open |
 |---|---|---|---|---|
-| feat.mappings | hobasa-data-engineering-agent/inputs/FEAT-ZD-48600/DE-07/feat.mappings.md | hobasa-data-engineering-agent/outputs/FEAT-ZD-48600/feat.mappings.md | 2e9108d | DE-06 |
-| task.components | hobasa-data-engineering-agent/inputs/FEAT-ZD-48600/DE-07/task.components.md | hobasa-data-engineering-agent/outputs/FEAT-ZD-48600/task.components.md | a126bc4 | DE-04 |
+| 1 | `feat.mappings` | Updated data mappings and transformation steps | Data Engineering agent · DE-06 | [input copy](https://github.com/arghya05/hobasa-data-engineering-agent/blob/main/inputs/FEAT-ZD-48600/DE-07/feat.mappings.md) · [original](https://github.com/arghya05/hobasa-data-engineering-agent/blob/main/outputs/FEAT-ZD-48600/feat.mappings.md) · [HTML](https://htmlpreview.github.io/?https://raw.githubusercontent.com/arghya05/hobasa-data-engineering-agent/main/docs/FEAT-ZD-48600/DE-06_feat-mappings.html) · [PDF](https://github.com/arghya05/hobasa-data-engineering-agent/blob/main/docs/FEAT-ZD-48600/DE-06_feat-mappings.pdf) |
+| 2 | `task.components` | Components, layers, sources or pipelines to change | Data Engineering agent · DE-04 | [input copy](https://github.com/arghya05/hobasa-data-engineering-agent/blob/main/inputs/FEAT-ZD-48600/DE-07/task.components.md) · [original](https://github.com/arghya05/hobasa-data-engineering-agent/blob/main/outputs/FEAT-ZD-48600/task.components.md) · [HTML](https://htmlpreview.github.io/?https://raw.githubusercontent.com/arghya05/hobasa-data-engineering-agent/main/docs/FEAT-ZD-48600/DE-04_task-components.html) · [PDF](https://github.com/arghya05/hobasa-data-engineering-agent/blob/main/docs/FEAT-ZD-48600/DE-04_task-components.pdf) |
 
-Full brief per attempt: `brief_attempt<N>.md` (trigger event, owner answers, tool view, refusal reasons).
+The full brief the agent was given, attempt by attempt: `brief_attempt<N>.md` in this folder.
 
-## Outputs (what the agent produced)
+## Output: what the agent produced
 
-| Item | GitHub file |
-|---|---|
-| task.components | hobasa-data-engineering-agent/outputs/FEAT-ZD-48600/task.components.md |
+| # | Output | What it is | Open |
+|---|---|---|---|
+| 1 | `task.components` | Components, layers, sources or pipelines to change | not produced (blocked) |
 
-## Code
-
-Repository `ap-pipeline-sample`, branch `feature/story`, commit `3fcbe1b`
+**Code:** repository [ap-pipeline-sample](https://github.com/arghya05/ap-pipeline-sample) · branch [feature/story](https://github.com/arghya05/ap-pipeline-sample/tree/feature/story) · commit [3fcbe1b](https://github.com/arghya05/ap-pipeline-sample/commit/3fcbe1b)
 
 ```
 no file changes in this step
 ```
 
-## How the agent worked
+## Checks and approval
 
-- Approach: The step was refused twice for G2 because the citation file:ap_pipeline/CLAUDE.md did not resolve, even after I opened that file with Read in attempt 2. The check apparently does not count that read as a received context item. In attempt 3 I removed every citation of that file from the output and the claims. Each fact it supported is now cited to the contracted inputs or the tool view instead: the CI command and the rule to keep the to_model signature are in task.components, and the version location is in tool:repo. I then rewrote the full output. The analysis is unchanged. I compared each pipeline stage (ingest, transform, dq, pipeline.run, delays, schedule) in the tool view against the transformation steps and validation rules in feat.mappings and the DE-04 component list in task.components to find the fewest changes. I checked the reject-reason order against the existing try/except in transform.py and carried forward the secrets view for all environments and the open questions. No connector was needed.
-- Tools used: Skill (data-engineering-steps), Read, Write
-- Helper subagents: none
-- Connector calls: none
-
-## Attempts (checks before any person saw the output)
-
-| Attempt | Session | Checks failed | Judge unsupported | Judge scores |
+| Attempt | Session | Problems found by the checks | Unsupported statements (judge) | Judge scores |
 |---|---|---|---|---|
 | 1 | new | 1 | — | — |
-| 2 | resumed | 1 | — | — |
-| 3 | resumed | 0 | 0 | {'correct': 5, 'complete': 4, 'grounded': 4, 'useful': 5} |
+| 2 | new | 1 | — | — |
+| 3 | new | 1 | — | — |
+| 4 | new | 1 | — | — |
+| 5 | new | 1 | — | — |
+| 6 | new | 1 | — | — |
+| 7 | continued | 1 | — | — |
+| 8 | continued | 1 | — | — |
+| 9 | continued | 1 | — | — |
 
-## Improvements the independent judge suggests (non-blocking, for the people at the gate)
+## How the agent worked
 
-- Pipeline issue for the spine, not the agent: the DE-07 input file `inputs/FEAT-ZD-48600/DE-07/task.components.md` is labelled as the DE-04 output at commit a126bc4, but its body is the refused DE-07 attempt-2 draft (it says 'attempt 2' and cites file:ap_pipeline/CLAUDE.md). Because of that, the IDs the output cites (IN-1 to IN-6, TC-1, TC-2, section 3 rules, section 4 secrets, R-I1, CQ-I1, CQ-I2, branch `feature/story`) are not defined in the input as delivered. They are defined only in the real a126bc4 content, kept at `inputs/FEAT-ZD-48600/DE-05/task.components.md`, and every one checks out there. Restore the correct a126bc4 content in the DE-07 input before the next run so the citations can be checked from the declared input.
-- ap_pipeline/CLAUDE.md is now listed as read, but the output no longer uses it. That file states CI coverage >= 90%, Python 3.9 standard library only, and 'Keep existing public signatures; add new functions for new behaviour'. These directly justify TR-1 and TR-2 being the minimum change and the test budget in section 3, and they would be valid citations now that the file has been read.
-- The outcome asks for 'minimum lines of code', but section 2 and the validation check state minimality only in words. A rough line or function count for TR-1 (constant + helper + else-branch) and TR-2 (one function) would make the claim checkable for DE-08.
-- TQ-4 widens carried CQ-I2 to include `delays_by_vendor`. That is fine as a question, but say that the widening is new in this step, because DE-04 asked only about `pipeline.run`.
-- Section 4 (secrets) relies entirely on DE-04 section 4, which was written for ingestion. Add one sentence stating that the transformation-layer components (TR-1, TR-2) bring no new environment, connection or store beyond what DE-04 assessed. The text partly says this, but it does not tie it to each environment.
+- **Approach:** —
+- **Tools used:** —
+- **Helper subagents:** none
+- **Connector calls:** none
 
-Details: `result_attempt<N>.json` (claims with sources), `checks_attempt<N>.json`, `judge_attempt<N>.json`.
+## Files in this folder (audit trail)
 
-## Human evaluation
-
-| Role | By | Decision | Scores | Comment or reason |
-|---|---|---|---|---|
-| Data engineer | sim.data_engineer | approve | — | automated checks and the independent judge passed |
+- `brief_attempt<N>.md`: the exact brief the agent received
+- `result_attempt<N>.json`: the agent's structured answer (approach, tools, claims with their sources, open questions)
+- `checks_attempt<N>.json`: what the automated guardrail checks found
+- `judge_attempt<N>.json`, `judge_brief_attempt<N>.md`: the independent judge
+- `outputs/`: the outputs as approved
